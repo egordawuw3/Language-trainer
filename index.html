@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Языковой тренажёр</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<!-- Боковое меню -->
+<div class="sidebar">
+    <h1>Языковой тренажёр</h1>
+    <button onclick="toggleTheme()">🌙 Тёмная тема</button>
+    <button onclick="showProfile()">👤 Профиль</button>
+    <button onclick="showShop()">🛒 Магазин</button>
+    <button onclick="showDailyTasks()">📅 Ежедневные задания</button>
+    <button onclick="restartQuiz()">🔄 Начать заново</button>
+</div>
+<!-- Основной контент -->
+<div class="main-content">
+    <header>
+        <h1>Учи языки с удовольствием!</h1>
+    </header>
+    <div id="progress-bar">
+        <div id="progress"></div>
+    </div>
+    <!-- Выбор языка -->
+    <section id="language-choice">
+        <h2>🌍 Выбери язык</h2>
+        <div class="buttons">
+            <button onclick="chooseLanguage('english')">🇬🇧 Английский</button>
+            <button onclick="chooseLanguage('bulgarian')">🇧🇬 Болгарский</button>
+        </div>
+    </section>
+    <!-- Выбор уровня -->
+    <section id="level-choice" class="hidden">
+        <h2>📊 Выберите уровень сложности</h2>
+        <div class="buttons">
+            <button onclick="chooseLevel('A1')">A1 (Начальный)</button>
+            <button onclick="chooseLevel('C1')">C1 (Продвинутый)</button>
+        </div>
+    </section>
+    <!-- Тесты -->
+    <section id="quiz-section" class="hidden">
+        <h2>📝 Тест</h2>
+        <div class="quiz-container">
+            <p id="question"></p>
+            <div id="audio"></div>
+            <div id="image"></div>
+            <div id="writing"></div>
+            <div id="fill-in-the-blank"></div>
+            <div id="matching"></div>
+            <div id="options"></div>
+            <p id="result"></p>
+            <p id="timer"></p>
+            <p id="score"></p>
+        </div>
+    </section>
+    <!-- Результаты -->
+    <section id="results-section" class="hidden">
+        <h2>📊 Результаты</h2>
+        <p id="final-score"></p>
+        <div id="achievements-section">
+            <h3>🏆 Достижения</h3>
+            <div id="achievements-list"></div>
+        </div>
+        <div class="social-share">
+            <button onclick="shareOnFacebook()">Поделиться в Facebook</button>
+            <button onclick="shareOnTwitter()">Поделиться в Twitter</button>
+        </div>
+    </section>
+    <!-- Профиль -->
+    <section id="profile-section" class="hidden">
+        <button id="close-profile" onclick="closeProfile()">×</button>
+        <h2>👤 Профиль</h2>
+        <div class="profile-info">
+            <p>Имя: <span id="profile-name">Гость</span></p>
+            <p>Уровень: <span id="profile-level">1</span></p>
+            <p>Опыт: <span id="profile-xp">0</span>/100</p>
+            <p>Монеты: <span id="profile-coins">0</span></p>
+        </div>
+        <div id="profile-achievements">
+            <h3>🏆 Достижения</h3>
+            <div id="profile-achievements-list"></div>
+        </div>
+        <div id="profile-progress">
+            <h3>📊 Прогресс</h3>
+            <canvas id="progress-chart"></canvas>
+        </div>
+        <button onclick="toggleTheme()">🌙 Сменить тему</button>
+        <button onclick="resetProgress()">🔄 Сбросить прогресс</button>
+    </section>
+    <!-- Магазин -->
+    <section id="shop-section" class="hidden">
+        <button id="close-shop" onclick="closeShop()">×</button>
+        <h2>🛒 Магазин</h2>
+        <div class="shop-items">
+            <div class="shop-item">
+                <h3>Подсказка</h3>
+                <p>Стоимость: 10 монет</p>
+                <button onclick="buyHint()">Купить</button>
+            </div>
+            <div class="shop-item">
+                <h3>Разблокировать уровень A2</h3>
+                <p>Стоимость: 50 монет</p>
+                <button onclick="unlockLevel('A2')">Купить</button>
+            </div>
+        </div>
+    </section>
+    <!-- Ежедневные задания -->
+    <section id="daily-tasks-section" class="hidden">
+        <button id="close-daily-tasks" onclick="closeDailyTasks()">×</button>
+        <h2>📅 Ежедневные задания</h2>
+        <div id="daily-tasks-list"></div>
+    </section>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
