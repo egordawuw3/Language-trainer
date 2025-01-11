@@ -1,0 +1,357 @@
+/* Основные цвета */
+:root {
+    --primary-color: #38a169; /* Зелёный */
+    --secondary-color: #2f855a; /* Тёмно-зелёный */
+    --background-light: #f4f4f9; /* Светлый фон */
+    --background-dark: #1a202c; /* Тёмный фон */
+    --text-light: #2d3748; /* Тёмный текст */
+    --text-dark: #e2e8f0; /* Светлый текст */
+    --accent-color: #e53e3e; /* Красный для акцентов */
+}
+
+/* Основные стили */
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    min-height: 100vh;
+    background: var(--background-light);
+    color: var(--text-light);
+    line-height: 1.6;
+    transition: background 0.3s, color 0.3s;
+}
+
+/* Боковое меню */
+.sidebar {
+    width: 250px;
+    background: var(--background-dark);
+    color: var(--text-dark);
+    padding: 20px;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sidebar h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+}
+
+.sidebar button {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    background: var(--secondary-color);
+    color: var(--text-dark);
+    transition: background 0.3s, transform 0.2s;
+}
+
+.sidebar button:hover {
+    background: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+/* Основной контент */
+.main-content {
+    flex: 1;
+    padding: 20px;
+    background: var(--background-light);
+    transition: background 0.3s, color 0.3s;
+}
+
+/* Тёмная тема */
+body.dark-theme {
+    background: var(--background-dark);
+    color: var(--text-dark);
+}
+
+body.dark-theme .main-content {
+    background: var(--background-dark);
+    color: var(--text-dark);
+}
+
+body.dark-theme .quiz-container {
+    background: var(--background-dark);
+    color: var(--text-dark);
+}
+
+body.dark-theme button {
+    background: var(--primary-color);
+    color: var(--text-dark);
+}
+
+/* Заголовок */
+header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Прогресс-бар */
+#progress-bar {
+    width: 100%;
+    background-color: var(--background-light);
+    border-radius: 12px;
+    margin: 20px 0;
+    overflow: hidden;
+}
+
+#progress {
+    height: 10px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    width: 0%;
+    border-radius: 12px;
+    transition: width 0.3s ease-in-out;
+}
+
+/* Контейнер вопросов */
+.quiz-container {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 0 auto;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.quiz-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Кнопки */
+button {
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Скрытые элементы */
+.hidden {
+    display: none;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.quiz-container, .achievement, button {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Профиль */
+#profile-section {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--background-light);
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 20px;
+    box-shadow: none;
+    border-radius: 0;
+    display: none; /* Скрыт по умолчанию */
+}
+
+#profile-section.fullscreen {
+    display: block; /* Показываем при открытии */
+}
+
+body.dark-theme #profile-section {
+    background: var(--background-dark);
+    color: var(--text-dark);
+}
+
+/* Кнопка закрытия профиля */
+#close-profile {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+}
+
+#close-profile:hover {
+    background: #c53030;
+}
+
+/* Магазин и ежедневные задания на весь экран */
+#shop-section,
+#daily-tasks-section {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--background-light);
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 20px;
+    box-shadow: none;
+    border-radius: 0;
+    display: none; /* Скрыт по умолчанию */
+}
+
+#shop-section.fullscreen,
+#daily-tasks-section.fullscreen {
+    display: block; /* Показываем при открытии */
+}
+
+body.dark-theme #shop-section,
+body.dark-theme #daily-tasks-section {
+    background: var(--background-dark);
+    color: var(--text-dark);
+}
+
+/* Кнопка закрытия магазина и ежедневных заданий */
+#close-shop,
+#close-daily-tasks {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+}
+
+#close-shop:hover,
+#close-daily-tasks:hover {
+    background: #c53030;
+}
+
+/* Магазин */
+.shop-items {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.shop-item {
+    background: var(--background-light);
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    flex: 1 1 calc(50% - 20px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.shop-item h3 {
+    margin: 0 0 10px;
+    font-size: 1.2rem;
+}
+
+.shop-item p {
+    margin: 0 0 10px;
+    color: var(--text-light);
+}
+
+.shop-item button {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.shop-item button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Ежедневные задания */
+.task {
+    background: var(--background-light);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.task p {
+    margin: 0 0 10px;
+}
+
+.task progress {
+    width: 100%;
+    height: 10px;
+    border-radius: 5px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 10px;
+    }
+    .sidebar h1 {
+        font-size: 1.2rem;
+        margin-bottom: 0;
+    }
+    .sidebar button {
+        margin: 5px;
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+    .main-content {
+        padding: 10px;
+    }
+}
