@@ -27,10 +27,10 @@ const questions = {
                 correct: 1
             },
             {
-                type: "multiple-correct",
-                question: "Какие из этих слов относятся к фруктам?",
-                answers: ["apple", "banana", "carrot", "tomato"],
-                correct: [1, 2]
+                type: "multiple-choice",
+                question: "Как сказать 'книга' на английском?",
+                answers: ["book", "pen", "desk", "chair"],
+                correct: 1
             },
             {
                 type: "grammar",
@@ -39,42 +39,104 @@ const questions = {
             },
             {
                 type: "multiple-choice",
-                question: "Как сказать 'книга' на английском?",
-                answers: ["book", "pen", "desk", "chair"],
-                correct: 1
-            },
-            {
-                type: "multiple-choice",
                 question: "Как сказать 'собака' на английском?",
                 answers: ["dog", "cat", "bird", "fish"],
                 correct: 1
-            },
-            {
-                type: "grammar",
-                question: "Исправьте ошибку: 'He don't like apples.'",
-                correctAnswer: "He doesn't like apples."
             },
             {
                 type: "multiple-choice",
                 question: "Как сказать 'дом' на английском?",
                 answers: ["house", "apartment", "building", "room"],
                 correct: 1
-            },
+            }
+        ],
+        A2: [
             {
                 type: "multiple-choice",
-                question: "Как сказать 'машина' на английском?",
-                answers: ["car", "bus", "train", "bike"],
+                question: "Как сказать 'завтрак' на английском?",
+                answers: ["breakfast", "lunch", "dinner", "snack"],
                 correct: 1
             },
             {
                 type: "grammar",
-                question: "Исправьте ошибку: 'They is happy.'",
-                correctAnswer: "They are happy."
+                question: "Исправьте ошибку: 'I am go to the park.'",
+                correctAnswer: "I am going to the park."
             },
             {
                 type: "multiple-choice",
-                question: "Как сказать 'вода' на английском?",
-                answers: ["water", "juice", "milk", "coffee"],
+                question: "Как сказать 'погода' на английском?",
+                answers: ["weather", "season", "temperature", "climate"],
+                correct: 1
+            },
+            {
+                type: "grammar",
+                question: "Исправьте ошибку: 'She don't like coffee.'",
+                correctAnswer: "She doesn't like coffee."
+            },
+            {
+                type: "multiple-choice",
+                question: "Как сказать 'работа' на английском?",
+                answers: ["job", "work", "office", "career"],
+                correct: 2
+            }
+        ],
+        B1: [
+            {
+                type: "multiple-choice",
+                question: "Выбери правильную форму: 'I ___ (to live) in London for 5 years.'",
+                answers: ["have lived", "lived", "had lived"],
+                correct: 1
+            },
+            {
+                type: "grammar",
+                question: "Исправьте ошибку: 'If I was you, I would go.'",
+                correctAnswer: "If I were you, I would go."
+            },
+            {
+                type: "multiple-choice",
+                question: "Выбери правильную форму: 'By the time we arrived, the movie ___ (to start).'",
+                answers: ["had started", "started", "has started"],
+                correct: 1
+            },
+            {
+                type: "multiple-choice",
+                question: "Выбери правильную форму: 'She ___ (to live) here since 2010.'",
+                answers: ["has lived", "lived", "had lived"],
+                correct: 1
+            },
+            {
+                type: "grammar",
+                question: "Исправьте ошибку: 'The book was wrote by him.'",
+                correctAnswer: "The book was written by him."
+            }
+        ],
+        B2: [
+            {
+                type: "multiple-choice",
+                question: "Выбери правильную форму: 'I wish I ___ (to be) there yesterday.'",
+                answers: ["was", "were", "had been"],
+                correct: 3
+            },
+            {
+                type: "grammar",
+                question: "Исправьте ошибку: 'He said he will come tomorrow.'",
+                correctAnswer: "He said he would come tomorrow."
+            },
+            {
+                type: "multiple-choice",
+                question: "Выбери правильную форму: 'This is the best movie I ___ (to see).'",
+                answers: ["have ever seen", "had ever seen", "saw"],
+                correct: 1
+            },
+            {
+                type: "grammar",
+                question: "Исправьте ошибку: 'She has been working here since 5 years.'",
+                correctAnswer: "She has been working here for 5 years."
+            },
+            {
+                type: "multiple-choice",
+                question: "Выбери правильную форму: 'If he ___ (to call), tell him I'm busy.'",
+                answers: ["calls", "will call", "called"],
                 correct: 1
             }
         ],
@@ -108,12 +170,42 @@ const questions = {
                 correctAnswer: "The book was written by him."
             }
         ],
+        C2: [
+            {
+                type: "multiple-choice",
+                question: "Выбери правильную форму: 'Had I known, I ___ (to tell) you.'",
+                answers: ["would have told", "would tell", "told"],
+                correct: 1
+            },
+            {
+                type: "grammar",
+                question: "Исправьте ошибку: 'The meeting was hold in the main hall.'",
+                correctAnswer: "The meeting was held in the main hall."
+            },
+            {
+                type: "multiple-choice",
+                question: "Выбери правильную форму: 'No sooner ___ (to arrive) than the meeting started.'",
+                answers: ["had I arrived", "I arrived", "did I arrive"],
+                correct: 1
+            },
+            {
+                type: "grammar",
+                question: "Исправьте ошибку: 'He speaks English as if he is a native speaker.'",
+                correctAnswer: "He speaks English as if he were a native speaker."
+            },
+            {
+                type: "multiple-choice",
+                question: "Выбери правильную форму: 'Hardly ___ (to finish) the report when the boss called.'",
+                answers: ["had I finished", "I finished", "did I finish"],
+                correct: 1
+            }
+        ]
     },
     bulgarian: {
         A1: [
             {
                 type: "multiple-choice",
-                question: "Как сказать 'ябълка' на болгарском?",
+                question: "Как сказать 'яблоко' на болгарском?",
                 answers: ["ябълка", "круша", "слива", "праскова"],
                 correct: 1
             },
@@ -139,16 +231,95 @@ const questions = {
                 question: "Как сказать 'машина' на болгарском?",
                 answers: ["кола", "автобус", "влак", "колело"],
                 correct: 1
+            }
+        ],
+        A2: [
+            {
+                type: "multiple-choice",
+                question: "Как сказать 'завтрак' на болгарском?",
+                answers: ["закуска", "обяд", "вечеря", "мезе"],
+                correct: 1
             },
             {
                 type: "grammar",
-                question: "Исправьте ошибку: 'Те са щастливи.'",
-                correctAnswer: "Те са щастливи."
+                question: "Исправьте ошибку: 'Тя отиде на работа.'",
+                correctAnswer: "Тя отива на работа."
             },
             {
                 type: "multiple-choice",
-                question: "Как сказать 'вода' на болгарском?",
-                answers: ["вода", "сок", "мляко", "кафе"],
+                question: "Как сказать 'погода' на болгарском?",
+                answers: ["време", "сезон", "температура", "климат"],
+                correct: 1
+            },
+            {
+                type: "grammar",
+                question: "Исправьте ошибку: 'Те не харесва кафе.'",
+                correctAnswer: "Те не харесват кафе."
+            },
+            {
+                type: "multiple-choice",
+                question: "Как сказать 'работа' на болгарском?",
+                answers: ["работа", "длъжност", "офис", "кариера"],
+                correct: 1
+            }
+        ],
+        B1: [
+            {
+                type: "multiple-choice",
+                question: "Выбери правильную форму: 'Ако аз ___ (знаех), щях да ти кажа.'",
+                answers: ["знаех", "знаеше", "знаел"],
+                correct: 2
+            },
+            {
+                type: "grammar",
+                question: "Исправьте ошибку: 'Ако бях ти, щях да отида.'",
+                correctAnswer: "Ако бях ти, щях да отида."
+            },
+            {
+                type: "multiple-choice",
+                question: "Выбери правильную форму: 'Когато той дойде, аз ___ (вече да съм излязъл).'",
+                answers: ["вече бях излязъл", "вече съм излязъл", "вече щях да съм излязъл"],
+                correct: 1
+            },
+            {
+                type: "grammar",
+                question: "Исправьте ошибку: 'Тя каза, че ще дойде утре.'",
+                correctAnswer: "Тя каза, че ще дойде утре."
+            },
+            {
+                type: "multiple-choice",
+                question: "Выбери правильную форму: 'Това е най-добрият филм, който ___ (виждам).'",
+                answers: ["съм виждал", "бях виждал", "видях"],
+                correct: 1
+            }
+        ],
+        B2: [
+            {
+                type: "multiple-choice",
+                question: "Выбери правильную форму: 'Ако той ___ (се обади), кажи му, че съм зает.'",
+                answers: ["се обади", "ще се обади", "се обаждаше"],
+                correct: 1
+            },
+            {
+                type: "grammar",
+                question: "Исправьте ошибку: 'Той работи тук от 5 години.'",
+                correctAnswer: "Той работи тук от 5 години."
+            },
+            {
+                type: "multiple-choice",
+                question: "Выбери правильную форму: 'Това е най-добрият филм, който ___ (виждам).'",
+                answers: ["съм виждал", "бях виждал", "видях"],
+                correct: 1
+            },
+            {
+                type: "grammar",
+                question: "Исправьте ошибку: 'Тя каза, че ще дойде утре.'",
+                correctAnswer: "Тя каза, че ще дойде утре."
+            },
+            {
+                type: "multiple-choice",
+                question: "Выбери правильную форму: 'Ако той ___ (се обади), кажи му, че съм зает.'",
+                answers: ["се обади", "ще се обади", "се обаждаше"],
                 correct: 1
             }
         ],
@@ -169,8 +340,49 @@ const questions = {
                 question: "Выбери правильную форму: 'Когато той дойде, аз ___ (вече да съм излязъл).'",
                 answers: ["вече бях излязъл", "вече съм излязъл", "вече щях да съм излязъл"],
                 correct: 1
+            },
+            {
+                type: "grammar",
+                question: "Исправьте ошибку: 'Тя каза, че ще дойде утре.'",
+                correctAnswer: "Тя каза, че ще дойде утре."
+            },
+            {
+                type: "multiple-choice",
+                question: "Выбери правильную форму: 'Това е най-добрият филм, който ___ (виждам).'",
+                answers: ["съм виждал", "бях виждал", "видях"],
+                correct: 1
             }
         ],
+        C2: [
+            {
+                type: "multiple-choice",
+                question: "Выбери правильную форму: 'Ако бях знаел, щях да ти ___ (кажа).'",
+                answers: ["кажа", "кажех", "бях казал"],
+                correct: 3
+            },
+            {
+                type: "grammar",
+                question: "Исправьте ошибку: 'Той каза, че ще дойде утре.'",
+                correctAnswer: "Той каза, че ще дойде утре."
+            },
+            {
+                type: "multiple-choice",
+                question: "Выбери правильную форму: 'Когато той дойде, аз ___ (вече да съм излязъл).'",
+                answers: ["вече бях излязъл", "вече съм излязъл", "вече щях да съм излязъл"],
+                correct: 1
+            },
+            {
+                type: "grammar",
+                question: "Исправьте ошибку: 'Тя каза, че ще дойде утре.'",
+                correctAnswer: "Тя каза, че ще дойде утре."
+            },
+            {
+                type: "multiple-choice",
+                question: "Выбери правильную форму: 'Това е най-добрият филм, който ___ (виждам).'",
+                answers: ["съм виждал", "бях виждал", "видях"],
+                correct: 1
+            }
+        ]
     }
 };
 
