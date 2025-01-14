@@ -5,7 +5,7 @@ let score = 0;
 const achievements = [];
 let timer;
 let hintsAvailable = 3;
-let timePerQuestion = 10; // Время на вопрос по умолчанию
+let timePerQuestion = 50; // Время на вопрос по умолчанию
 let userProgress = JSON.parse(localStorage.getItem('userProgress')) || {};
 let userLevel = userProgress.userLevel || 1; // Уровень пользователя
 let userXP = userProgress.userXP || 0; // Опыт пользователя
