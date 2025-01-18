@@ -19,10 +19,17 @@
     <button onclick="showDailyTasks()">📅 Ежедневные задания</button>
     <button onclick="restartQuiz()">🔄 Начать заново</button>
 </div>
+<!-- Добавляем кнопку меню -->
+<button id="menu-toggle" class="menu-toggle">
+    <span class="menu-icon">☰</span>
+</button>
 <!-- Основной контент -->
 <div class="main-content">
-    <header>
-        <h1>Папа, с юбилеем! 🎉 Учи языки с удовольствием!</h1>
+    <header class="main-header">
+        <div class="header-content">
+            <h1>Папа, с юбилеем! 🎉</h1>
+            <p class="header-subtitle">Учи языки с удовольствием!</p>
+        </div>
     </header>
     <div id="progress-bar">
         <div id="progress"></div>
@@ -125,6 +132,6 @@
 <!-- Аудио для звуковых эффектов -->
 <audio id="correct-sound" src="correct.mp3"></audio>
 <audio id="wrong-sound" src="wrong.mp3"></audio>
-<script src="script.js"></script>
+<script src="script.js" defer></script>
 </body>
 </html>
