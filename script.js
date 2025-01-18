@@ -1,22 +1,46 @@
-let selectedLanguage = '';
-let selectedLevel = '';
-let currentQuestion = 0;
-let score = 0;
-const achievements = [];
-let timer;
-let hintsAvailable = 3;
-let timePerQuestion = 50; // Время на вопрос по умолчанию
-let userProgress = JSON.parse(localStorage.getItem('userProgress')) || {};
-let userLevel = userProgress.userLevel || 1; // Уровень пользователя
-let userXP = userProgress.userXP || 0; // Опыт пользователя
-let coins = userProgress.coins || 0; // Монеты пользователя
-const xpToNextLevel = 100; // Опыт, необходимый для перехода на следующий уровень
-const dailyTasks = [
+// Глобальные переменные и состояние
+const state = {
+    selectedLanguage: '',
+    selectedLevel: '',
+    currentQuestion: 0,
+    score: 0,
+    timer: null,
+    timePerQuestion: 50,
+    isDarkTheme: localStorage.getItem('theme') === 'dark',
+    hintsAvailable: 3,
+    xpBoosterActive: false,
+    coins: parseInt(localStorage.getItem('coins')) || 0,
+    dailyTasks: [
     { description: "Пройти 5 вопросов", target: 5, progress: 0, reward: 10 },
     { description: "Заработать 20 XP", target: 20, progress: 0, reward: 15 },
     { description: "Использовать подсказку", target: 1, progress: 0, reward: 5 }
-];
+    ],
+    userProfile: {
+        level: parseInt(localStorage.getItem('userLevel')) || 1,
+        xp: parseInt(localStorage.getItem('userXP')) || 0,
+        totalQuestions: parseInt(localStorage.getItem('totalQuestions')) || 0,
+        correctAnswers: parseInt(localStorage.getItem('correctAnswers')) || 0,
+        achievements: JSON.parse(localStorage.getItem('achievements')) || []
+    },
+    xpToNextLevel: 100,
+    hints: {
+        regular: 3,
+        fiftyFifty: 2,
+        skipQuestion: 1,
+        extraTime: 3
+    },
+    achievements: [
+        { id: 'first_win', name: 'Первая победа', description: 'Ответьте правильно на первый вопрос', icon: '🎯' },
+        { id: 'perfect_score', name: 'Идеальный результат', description: 'Получите 100% за тест', icon: '🏆' },
+        { id: 'speed_demon', name: 'Быстрый как молния', description: 'Ответьте на вопрос за 5 секунд', icon: '⚡' },
+        { id: 'rich_student', name: 'Богатый студент', description: 'Накопите 1000 монет', icon: '💰' },
+        { id: 'speed_master', name: 'Мастер скорости', description: 'Ответьте на все вопросы за половину времени', icon: '⚡' },
+        { id: 'daily_hero', name: 'Ежедневный герой', description: 'Выполните все ежедневные задания', icon: '🌟' },
+        { id: 'hint_master', name: 'Мастер подсказок', description: 'Используйте все типы подсказок', icon: '💡' }
+    ]
+};
 
+// База вопросов
 const questions = {
     english: {
         A1: [
@@ -386,25 +410,268 @@ const questions = {
     }
 };
 
-// Выбор языка
-function chooseLanguage(lang) {
-    selectedLanguage = lang;
-    document.getElementById('language-choice').classList.add('hidden');
-    document.getElementById('level-choice').classList.remove('hidden');
+// Инициализация при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    updateSectionStyles();
+    
+    // Показываем начальную секцию
+    const sections = document.querySelectorAll('section');
+    sections.forEach(section => section.classList.add('hidden'));
+    
+    const languageSection = document.getElementById('language-choice');
+    if (languageSection) {
+        languageSection.classList.remove('hidden');
+        requestAnimationFrame(() => {
+            languageSection.style.opacity = '1';
+            languageSection.style.transform = 'translateY(0)';
+        });
+    }
+    
+    loadSavedHints();
+});
+
+// Обновляем функцию hideAllSections
+function hideAllSections() {
+    const sections = [
+        'language-choice',
+        'level-choice',
+        'quiz-section',
+        'results-section',
+        'profile-section',
+        'shop-section',
+        'daily-tasks-section'
+    ];
+    
+    sections.forEach(sectionId => {
+        const element = document.getElementById(sectionId);
+        if (element && !element.classList.contains('hidden')) {
+            // Сначала запускаем анимацию
+            element.style.opacity = '0';
+            element.style.transform = 'translateY(-20px)';
+            
+            // После завершения анимации скрываем элемент
+            setTimeout(() => {
+                element.classList.add('hidden');
+            }, 300);
+        }
+    });
 }
 
-// Выбор уровня
+// Общая функция для показа секции
+function showSection(sectionId) {
+    // Сначала скрываем все секции
+    hideAllSections();
+    
+    // Ждем завершения анимации скрытия
+    setTimeout(() => {
+        const section = document.getElementById(sectionId);
+        if (section) {
+            // Сначала убираем класс hidden
+            section.classList.remove('hidden');
+            
+            // Устанавливаем начальное состояние для анимации
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(20px)';
+            
+            // Запускаем анимацию появления
+            requestAnimationFrame(() => {
+                section.style.opacity = '1';
+                section.style.transform = 'translateY(0)';
+            });
+        }
+    }, 300);
+}
+
+// Обновляем функции переключения разделов
+function chooseLanguage(lang) {
+    state.selectedLanguage = lang;
+    showSection('level-choice');
+}
+
 function chooseLevel(level) {
-    selectedLevel = level;
-    document.getElementById('level-choice').classList.add('hidden');
-    document.getElementById('quiz-section').classList.remove('hidden');
+    state.selectedLevel = level;
+    showSection('quiz-section');
+    setTimeout(() => {
     loadQuestions();
+    }, 300);
+}
+
+function showProfile() {
+    showSection('profile-section');
+    setTimeout(() => {
+        const profileSection = document.getElementById('profile-section');
+        const accuracy = state.userProfile.totalQuestions > 0 
+            ? Math.round((state.userProfile.correctAnswers / state.userProfile.totalQuestions) * 100) 
+            : 0;
+        
+        // Фильтруем только полученные достижения
+        const unlockedAchievements = state.achievements.filter(achievement => 
+            state.userProfile.achievements.includes(achievement.id)
+        );
+        
+        profileSection.innerHTML = `
+            <div class="profile-header">
+                <h2>👤 Профиль</h2>
+                <button onclick="toggleTheme()" class="theme-button">
+                    ${state.isDarkTheme ? '☀️ Светлая тема' : '🌙 Тёмная тема'}
+                </button>
+            </div>
+            
+            <div class="profile-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">👑</div>
+                    <div class="stat-info">
+                        <h3>Уровень ${state.userProfile.level}</h3>
+                        <div class="xp-progress">
+                            <div class="xp-bar" style="width: ${(state.userProfile.xp / state.xpToNextLevel) * 100}%"></div>
+                        </div>
+                        <p>${state.userProfile.xp}/${state.xpToNextLevel} XP</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <h3>Статистика</h3>
+                        <p>Всего вопросов: ${state.userProfile.totalQuestions}</p>
+                        <p>Правильных ответов: ${state.userProfile.correctAnswers}</p>
+                        <p>Точность: ${accuracy}%</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <h3>Монеты</h3>
+                        <p>${state.coins} монет</p>
+                    </div>
+                </div>
+            </div>
+            
+            ${unlockedAchievements.length > 0 ? `
+                <div class="achievements-section">
+                    <h3>🏆 Полученные достижения</h3>
+                    <div class="achievements-grid">
+                        ${unlockedAchievements.map(achievement => `
+                            <div class="achievement-card">
+                                <div class="achievement-icon">${achievement.icon}</div>
+                                <h4>${achievement.name}</h4>
+                                <p>${achievement.description}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            ` : ''}
+        `;
+    }, 300);
+}
+
+function showShop() {
+    showSection('shop-section');
+    setTimeout(() => {
+        const shopSection = document.getElementById('shop-section');
+        shopSection.innerHTML = `
+            <div class="shop-header">
+                <h2>🛍️ Магазин</h2>
+                <p class="coins-balance">💰 ${state.coins} монет</p>
+            </div>
+            <div class="shop-items">
+                <div class="shop-item">
+                    <h3>💡 Подсказка</h3>
+                    <p>Поможет с трудным вопросом</p>
+                    <p class="price">10 монет</p>
+                    <button onclick="buyHint()" class="shop-button" ${state.coins < 10 ? 'disabled' : ''}>
+                        ${state.coins < 10 ? 'Недостаточно монет' : 'Купить'}
+                    </button>
+                </div>
+                <div class="shop-item">
+                    <h3>⚡️ Бустер XP</h3>
+                    <p>Удвоенный опыт на 1 час</p>
+                    <p class="price">30 монет</p>
+                    <button onclick="buyXPBooster()" class="shop-button" ${state.coins < 30 ? 'disabled' : ''}>
+                        ${state.coins < 30 ? 'Недостаточно монет' : 'Купить'}
+                    </button>
+                </div>
+                <div class="shop-item">
+                    <h3>⏭️ Пропуск вопроса</h3>
+                    <p>Пропустить сложный вопрос</p>
+                    <p class="price">15 монет</p>
+                    <button onclick="buySkip()" class="shop-button" ${state.coins < 15 ? 'disabled' : ''}>
+                        ${state.coins < 15 ? 'Недостаточно монет' : 'Купить'}
+                    </button>
+                </div>
+                <div class="shop-item">
+                    <h3>⏰ Дополнительное время</h3>
+                    <p>+30 секунд на вопрос</p>
+                    <p class="price">20 монет</p>
+                    <button onclick="buyExtraTime()" class="shop-button" ${state.coins < 20 ? 'disabled' : ''}>
+                        ${state.coins < 20 ? 'Недостаточно монет' : 'Купить'}
+                    </button>
+                </div>
+            </div>
+        `;
+    }, 300);
+}
+
+function showDailyTasks() {
+    showSection('daily-tasks-section');
+    setTimeout(() => {
+        // Обновляем содержимое заданий после появления секции
+        const tasksSection = document.getElementById('daily-tasks-section');
+        // ... остальной код обновления заданий ...
+    }, 300);
+}
+
+// Обновляем стили для секций
+function updateSectionStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+        section {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        section.hidden {
+            display: none;
+        }
+
+        /* Добавляем состояния для анимации */
+        section:not(.hidden) {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+    `;
+    document.head.appendChild(style);
 }
 
 // Загрузка вопросов
 function loadQuestions() {
-    const quizQuestions = questions[selectedLanguage][selectedLevel];
+    const quizQuestions = questions[state.selectedLanguage][state.selectedLevel];
     if (quizQuestions && quizQuestions.length > 0) {
+        state.currentQuestion = 0;
+        state.score = 0;
         showQuestion(quizQuestions);
         startTimer();
     } else {
@@ -412,395 +679,263 @@ function loadQuestions() {
     }
 }
 
+// Скрытие всех секций
+function hideAllSections() {
+    const sections = [
+        'language-choice',
+        'level-choice',
+        'quiz-section',
+        'results-section',
+        'profile-section',
+        'shop-section',
+        'daily-tasks-section'
+    ];
+    
+    sections.forEach(section => {
+        const element = document.getElementById(section);
+        if (element) {
+            // Добавляем проверку, чтобы не скрывать уже скрытые секции
+            if (!element.classList.contains('hidden')) {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    element.classList.add('hidden');
+                }, 300);
+            }
+        }
+    });
+}
+
+// Функция переключения темы
+function toggleTheme() {
+    state.isDarkTheme = !state.isDarkTheme;
+    document.body.classList.toggle('dark-theme');
+    localStorage.setItem('theme', state.isDarkTheme ? 'dark' : 'light');
+    updateThemeButton();
+}
+
+// Обновление кнопки темы
+function updateThemeButton() {
+    const themeButton = document.querySelector('button[onclick="toggleTheme()"]');
+    if (themeButton) {
+        themeButton.innerHTML = state.isDarkTheme ? '☀️ Светлая тема' : '🌙 Тёмная тема';
+    }
+}
+
+// Обновление отображения монет
+function updateCoinsDisplay() {
+    const coinsDisplays = document.querySelectorAll('.coins-balance');
+    coinsDisplays.forEach(display => {
+        display.textContent = `💰 ${state.coins} монет`;
+    });
+}
+
 // Показ вопроса
 function showQuestion(quizQuestions) {
     const questionElement = document.getElementById('question');
     const optionsElement = document.getElementById('options');
     const writingElement = document.getElementById('writing');
+    const resultElement = document.getElementById('result');
+    
     // Очищаем предыдущие элементы
     optionsElement.innerHTML = '';
     writingElement.innerHTML = '';
-    const currentQ = quizQuestions[currentQuestion];
+    resultElement.textContent = '';
+    
+    const currentQ = quizQuestions[state.currentQuestion];
+    
+    // Анимация появления вопроса
+    questionElement.style.opacity = '0';
     questionElement.textContent = currentQ.question;
+    setTimeout(() => {
+        questionElement.style.opacity = '1';
+    }, 100);
 
     switch (currentQ.type) {
         case "multiple-choice":
-            currentQ.answers.forEach((answer, index) => {
+            // Перемешиваем варианты ответов
+            const shuffledAnswers = shuffleArray([...currentQ.answers]);
+            shuffledAnswers.forEach((answer, index) => {
                 const button = document.createElement('button');
                 button.textContent = answer;
-                button.onclick = () => checkAnswer(index + 1, quizQuestions);
+                button.className = 'option-button';
+                button.style.opacity = '0';
+                button.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    button.style.opacity = '1';
+                    button.style.transform = 'translateY(0)';
+                }, 150 + index * 100);
+                
+                button.onclick = () => checkAnswer(currentQ.answers.indexOf(answer) + 1, quizQuestions);
                 optionsElement.appendChild(button);
             });
             break;
 
-        case "multiple-correct":
-            currentQ.answers.forEach((answer, index) => {
-                const checkbox = document.createElement('input');
-                checkbox.type = "checkbox";
-                checkbox.id = `option-${index}`;
-                const label = document.createElement('label');
-                label.textContent = answer;
-                label.htmlFor = `option-${index}`;
-                optionsElement.appendChild(checkbox);
-                optionsElement.appendChild(label);
-            });
-            const submitButton = document.createElement('button');
-            submitButton.textContent = "Отправить";
-            submitButton.onclick = () => {
-                const selected = [];
-                currentQ.answers.forEach((_, index) => {
-                    if (document.getElementById(`option-${index}`).checked) {
-                        selected.push(index + 1);
-                    }
-                });
-                checkAnswer(selected, quizQuestions);
-            };
-            optionsElement.appendChild(submitButton);
-            break;
-
         case "grammar":
+            const inputContainer = document.createElement('div');
+            inputContainer.className = 'input-container';
+            
             const input = document.createElement('input');
             input.type = "text";
             input.placeholder = "Введите исправленный текст...";
-            writingElement.appendChild(input);
-            const submitButtonGrammar = document.createElement('button');
-            submitButtonGrammar.textContent = "Отправить";
-            submitButtonGrammar.onclick = () => checkAnswer(input.value.trim(), quizQuestions);
-            writingElement.appendChild(submitButtonGrammar);
+            input.className = 'grammar-input';
+            
+            const submitButton = document.createElement('button');
+            submitButton.textContent = "Проверить";
+            submitButton.className = 'submit-button';
+            
+            inputContainer.appendChild(input);
+            inputContainer.appendChild(submitButton);
+            writingElement.appendChild(inputContainer);
+            
+            input.focus();
+            
+            submitButton.onclick = () => checkAnswer(input.value.trim(), quizQuestions);
+            input.onkeypress = (e) => {
+                if (e.key === 'Enter') {
+                    checkAnswer(input.value.trim(), quizQuestions);
+                }
+            };
             break;
     }
+    
     updateProgressBar();
+
+    // Добавляем панель подсказок
+    const hintsPanel = document.createElement('div');
+    hintsPanel.className = 'hints-panel';
+    hintsPanel.innerHTML = `
+        <button onclick="useFiftyFifty()" class="hint-button" ${state.hints.fiftyFifty > 0 ? '' : 'disabled'}>
+            💫 50/50 (${state.hints.fiftyFifty})
+        </button>
+        <button onclick="useSkipQuestion()" class="hint-button" ${state.hints.skipQuestion > 0 ? '' : 'disabled'}>
+            ⏭️ Пропустить (${state.hints.skipQuestion})
+        </button>
+        <button onclick="useExtraTime()" class="hint-button" ${state.hints.extraTime > 0 ? '' : 'disabled'}>
+            ⏰ +30 сек (${state.hints.extraTime})
+        </button>
+    `;
+    
+    document.getElementById('quiz-section').insertBefore(hintsPanel, optionsElement);
 }
 
 // Проверка ответа
 function checkAnswer(answer, quizQuestions) {
     const resultElement = document.getElementById('result');
-    clearInterval(timer); // Сбрасываем таймер
-    const currentQ = quizQuestions[currentQuestion];
+    clearInterval(state.timer);
+    const currentQ = quizQuestions[state.currentQuestion];
     let isCorrect = false;
 
     if (currentQ.type === "grammar") {
-        isCorrect = answer === currentQ.correctAnswer;
-    } else if (currentQ.type === "multiple-correct") {
-        isCorrect = JSON.stringify(answer) === JSON.stringify(currentQ.correct);
+        isCorrect = answer.toLowerCase() === currentQ.correctAnswer.toLowerCase();
     } else {
         isCorrect = answer === currentQ.correct;
     }
 
+    // Обновляем статистику
+    updateStatistics(isCorrect);
+
     if (isCorrect) {
-        resultElement.textContent = "Правильно! 🎉";
-        score++;
-        userXP += 10; // Начисляем 10 XP за правильный ответ
-        coins += 5; // Начисляем 5 монет за правильный ответ
-        shootConfetti();
-        checkLevelUp(); // Проверяем, не повысился ли уровень
-        // Обновляем прогресс ежедневных заданий
-        dailyTasks[0].progress++; // Пройти вопрос
-        dailyTasks[1].progress += 10; // Заработать XP
-        checkDailyTasks();
+        // Увеличиваем счет и монеты
+        state.score++;
+        state.coins += 5;
+        updateCoinsDisplay();
+        
+        // Добавляем XP
+        updateXP(10);
+        
+        resultElement.innerHTML = `
+            <div class="result-message correct-answer">
+                <span class="emoji">🎉</span>
+                Отлично! Правильный ответ!
+                <span class="points">+10 XP • +5 монет</span>
+            </div>
+        `;
+        
+        // Эффект конфетти
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
     } else {
-        resultElement.textContent = "Неправильно 😢";
+        resultElement.innerHTML = `
+            <div class="result-message wrong-answer">
+                <span class="emoji">😢</span>
+                Не совсем так...
+                <div class="correct-text">
+                    Правильный ответ:<br>
+                    ${currentQ.correctAnswer || quizQuestions[state.currentQuestion].answers[currentQ.correct - 1]}
+                </div>
+            </div>
+        `;
     }
+
+    // Проверяем достижения
+    checkAchievements();
+
+    // Сохраняем прогресс
+    localStorage.setItem('coins', state.coins);
+    localStorage.setItem('score', state.score);
 
     // Переход к следующему вопросу
-    currentQuestion++;
-    if (currentQuestion < quizQuestions.length) {
         setTimeout(() => {
+        state.currentQuestion++;
+        if (state.currentQuestion < quizQuestions.length) {
             showQuestion(quizQuestions);
-            resultElement.textContent = ""; // Очищаем результат
-            startTimer(); // Запускаем таймер для следующего вопроса
-        }, 1000); // Задержка 1 секунда перед следующим вопросом
     } else {
-        resultElement.textContent += " Тест завершен!";
-        document.getElementById('score').textContent = `Твой результат: ${score} из ${quizQuestions.length}`;
-        document.getElementById('quiz-section').classList.add('hidden');
-        document.getElementById('results-section').classList.remove('hidden');
-        checkAchievements();
-        saveProgress();
-    }
-}
-
-// Обновление прогресс-бара
-function updateProgressBar() {
-    const quizQuestions = questions[selectedLanguage][selectedLevel];
-    const progress = ((currentQuestion + 1) / quizQuestions.length) * 100;
-    document.getElementById('progress').style.width = `${progress}%`;
-}
-
-// Конфетти для правильных ответов
-function shootConfetti() {
-    confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-    });
-}
-
-// Таймер
-function startTimer() {
-    let timeLeft = timePerQuestion;
-    const timerElement = document.getElementById('timer');
-    timerElement.textContent = `Осталось времени: ${timeLeft} сек.`;
-    timer = setInterval(() => {
-        timeLeft--;
-        timerElement.textContent = `Осталось времени: ${timeLeft} сек.`;
-        if (timeLeft <= 0) {
-            clearInterval(timer);
-            checkAnswer(null, questions[selectedLanguage][selectedLevel]);
+            showFinalResults();
         }
-    }, 1000);
-}
-
-// Проверка повышения уровня
-function checkLevelUp() {
-    if (userXP >= xpToNextLevel) {
-        userLevel++; // Повышаем уровень
-        userXP = 0; // Сбрасываем XP
-        alert(`Поздравляем! Вы достигли уровня ${userLevel}! 🎉`);
-        updateProfile(); // Обновляем профиль
-    }
-}
-
-// Проверка выполнения ежедневных заданий
-function checkDailyTasks() {
-    dailyTasks.forEach(task => {
-        if (task.progress >= task.target) {
-            coins += task.reward;
-            alert(`Задание "${task.description}" выполнено! Вы получили ${task.reward} монет.`);
-            task.progress = 0; // Сбрасываем прогресс
-        }
-    });
-    updateProfile();
-}
-
-// Обновление прогресса ежедневных заданий
-function updateDailyTasks() {
-    const tasksList = document.getElementById('daily-tasks-list');
-    tasksList.innerHTML = dailyTasks.map(task => `
-  <div class="task">
-   <p>${task.description}</p>
-   <progress value="${task.progress}" max="${task.target}"></progress>
-   <p>Награда: ${task.reward} монет</p>
-  </div>
- `).join('');
-}
-
-// Показ ежедневных заданий
-function showDailyTasks() {
-    document.getElementById('quiz-section').classList.add('hidden');
-    document.getElementById('results-section').classList.add('hidden');
-    document.getElementById('profile-section').classList.add('hidden');
-    document.getElementById('shop-section').classList.add('hidden');
-    document.getElementById('daily-tasks-section').classList.remove('hidden');
-    document.getElementById('daily-tasks-section').classList.add('fullscreen');
-    updateDailyTasks();
-}
-
-// Закрытие ежедневных заданий
-function closeDailyTasks() {
-    document.getElementById('daily-tasks-section').classList.add('hidden');
-    document.getElementById('daily-tasks-section').classList.remove('fullscreen');
-}
-
-// Покупка подсказки
-function buyHint() {
-    if (coins >= 10) {
-        coins -= 10;
-        hintsAvailable++;
-        alert("Вы купили подсказку! Теперь у вас " + hintsAvailable + " подсказок.");
-        updateProfile();
-    } else {
-        alert("Недостаточно монет!");
-    }
-}
-
-// Разблокировка уровня
-function unlockLevel(level) {
-    if (coins >= 50) {
-        coins -= 50;
-        alert("Уровень " + level + " разблокирован!");
-        updateProfile();
-    } else {
-        alert("Недостаточно монет!");
-    }
+    }, 2000);
 }
 
 // Показ магазина
 function showShop() {
-    document.getElementById('quiz-section').classList.add('hidden');
-    document.getElementById('results-section').classList.add('hidden');
-    document.getElementById('profile-section').classList.add('hidden');
-    document.getElementById('daily-tasks-section').classList.add('hidden');
-    document.getElementById('shop-section').classList.remove('hidden');
-    document.getElementById('shop-section').classList.add('fullscreen');
-}
-
-// Закрытие магазина
-function closeShop() {
-    document.getElementById('shop-section').classList.add('hidden');
-    document.getElementById('shop-section').classList.remove('fullscreen');
-}
-
-// Проверка достижений
-function checkAchievements() {
-    const quizQuestions = questions[selectedLanguage][selectedLevel];
-    if (score === quizQuestions.length) {
-        achievements.push(`🎖️ Мастер ${selectedLevel}`);
-        alert("Поздравляем! Вы достигли нового уровня!");
-    }
-    if (score >= 5) {
-        achievements.push("🏅 Стратег");
-        alert("Вы заработали новое достижение: Стратег!");
-    }
-    showAchievements();
-}
-
-// Показ достижений
-function showAchievements() {
-    const achievementsList = document.getElementById('achievements-list');
-    achievementsList.innerHTML = achievements.map(achievement => `
-  <div class="achievement">${achievement}</div>
- `).join('');
-    document.getElementById('achievements-section').classList.remove('hidden');
-}
-
-// Сохранение прогресса
-function saveProgress() {
-    userProgress[selectedLanguage] = userProgress[selectedLanguage] || {};
-    userProgress[selectedLanguage][selectedLevel] = {
-        score,
-        achievements
-    };
-    userProgress.userLevel = userLevel;
-    userProgress.userXP = userXP;
-    userProgress.coins = coins;
-    localStorage.setItem('userProgress', JSON.stringify(userProgress));
-    updateProfile();
-}
-
-// Перезапуск теста
-function restartQuiz() {
-    currentQuestion = 0;
-    score = 0;
-    document.getElementById('results-section').classList.add('hidden');
-    document.getElementById('quiz-section').classList.remove('hidden');
-    loadQuestions();
-}
-
-// Переключение темы
-function toggleTheme() {
-    document.body.classList.toggle('dark-theme');
-    localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
-}
-
-// Показ профиля
-function showProfile() {
-    document.getElementById('quiz-section').classList.add('hidden');
-    document.getElementById('results-section').classList.add('hidden');
-    document.getElementById('profile-section').classList.remove('hidden');
-    document.getElementById('profile-section').classList.add('fullscreen');
-    updateProfile();
-}
-
-// Закрытие профиля
-function closeProfile() {
-    document.getElementById('profile-section').classList.add('hidden');
-    document.getElementById('profile-section').classList.remove('fullscreen');
-}
-
-// Обновление профиля
-let progressChart = null; // Добавляем переменную для хранения текущего графика
-
-function updateProfile() {
-    const profileName = document.getElementById('profile-name');
-    const profileLevel = document.getElementById('profile-level');
-    const profileXP = document.getElementById('profile-xp');
-    const profileCoins = document.getElementById('profile-coins');
-    const profileAchievementsList = document.getElementById('profile-achievements-list');
-    const progressChartCanvas = document.getElementById('progress-chart');
-
-    // Имя пользователя
-    profileName.textContent = "Гость";
-
-    // Уровень и опыт
-    profileLevel.textContent = userLevel;
-    profileXP.textContent = `${userXP}/${xpToNextLevel}`;
-
-    // Монеты
-    profileCoins.textContent = coins;
-
-    // Достижения
-    const allAchievements = Object.values(userProgress).flatMap(lang =>
-        Object.values(lang).flatMap(level => level.achievements)
-    );
-    profileAchievementsList.innerHTML = allAchievements.map(achievement => `
-  <div class="achievement">${achievement}</div>
- `).join('');
-
-    // График прогресса
-    if (progressChartCanvas) {
-        // Уничтожаем предыдущий график, если он существует
-        if (progressChart) {
-            progressChart.destroy();
-        }
-
-        const ctx = progressChartCanvas.getContext('2d');
-        progressChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Опыт', 'Монеты', 'Достижения'],
-                datasets: [{
-                    label: 'Прогресс',
-                    data: [userXP, coins, allAchievements.length],
-                    backgroundColor: ['#38a169', '#2f855a', '#2d3748'],
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    }
-}
-
-// Сброс прогресса
-function resetProgress() {
-    localStorage.removeItem('userProgress');
-    userProgress = {};
-    userLevel = 1;
-    userXP = 0;
-    coins = 0;
-    updateProfile();
-    alert("Прогресс сброшен!");
-}
-
-// Социальные функции
-function shareOnFacebook() {
-    const url = encodeURIComponent(window.location.href);
-    const text = encodeURIComponent(`Я выучил ${score} слов в языковом тренажёре! Попробуйте и вы: ${url}`);
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`, '_blank');
-}
-
-function shareOnTwitter() {
-    const url = encodeURIComponent(window.location.href);
-    const text = encodeURIComponent(`Я выучил ${score} слов в языковом тренажёре! Попробуйте и вы: ${url}`);
-    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
-}
-
-// При загрузке страницы
-if (localStorage.getItem('theme') === 'dark') {
-    document.body.classList.add('dark-theme');
-}
-
-// Загружаем прогресс
-if (localStorage.getItem('userProgress')) {
-    userProgress = JSON.parse(localStorage.getItem('userProgress'));
-    userLevel = userProgress.userLevel || 1;
-    userXP = userProgress.userXP || 0;
-    coins = userProgress.coins || 0;
+    showSection('shop-section');
+    setTimeout(() => {
+        const shopSection = document.getElementById('shop-section');
+        shopSection.innerHTML = `
+            <div class="shop-header">
+                <h2>🛍️ Магазин</h2>
+                <p class="coins-balance">💰 ${state.coins} монет</p>
+            </div>
+            <div class="shop-items">
+                <div class="shop-item">
+                    <h3>💡 Подсказка</h3>
+                    <p>Поможет с трудным вопросом</p>
+                    <p class="price">10 монет</p>
+                    <button onclick="buyHint()" class="shop-button" ${state.coins < 10 ? 'disabled' : ''}>
+                        ${state.coins < 10 ? 'Недостаточно монет' : 'Купить'}
+                    </button>
+                </div>
+                <div class="shop-item">
+                    <h3>⚡️ Бустер XP</h3>
+                    <p>Удвоенный опыт на 1 час</p>
+                    <p class="price">30 монет</p>
+                    <button onclick="buyXPBooster()" class="shop-button" ${state.coins < 30 ? 'disabled' : ''}>
+                        ${state.coins < 30 ? 'Недостаточно монет' : 'Купить'}
+                    </button>
+                </div>
+                <div class="shop-item">
+                    <h3>⏭️ Пропуск вопроса</h3>
+                    <p>Пропустить сложный вопрос</p>
+                    <p class="price">15 монет</p>
+                    <button onclick="buySkip()" class="shop-button" ${state.coins < 15 ? 'disabled' : ''}>
+                        ${state.coins < 15 ? 'Недостаточно монет' : 'Купить'}
+                    </button>
+                </div>
+                <div class="shop-item">
+                    <h3>⏰ Дополнительное время</h3>
+                    <p>+30 секунд на вопрос</p>
+                    <p class="price">20 монет</p>
+                    <button onclick="buyExtraTime()" class="shop-button" ${state.coins < 20 ? 'disabled' : ''}>
+                        ${state.coins < 20 ? 'Недостаточно монет' : 'Купить'}
+                    </button>
+                </div>
+            </div>
+        `;
+    }, 300);
 }
 
 // Вспомогательная функция для перемешивания массива
@@ -810,4 +945,710 @@ function shuffleArray(array) {
         [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
+}
+
+// Обновление прогресс-бара
+function updateProgressBar() {
+    const progressBar = document.getElementById('progress');
+    const quizQuestions = questions[state.selectedLanguage][state.selectedLevel];
+    const progress = ((state.currentQuestion + 1) / quizQuestions.length) * 100;
+    progressBar.style.width = `${progress}%`;
+}
+
+// Показ финальных результатов
+function showFinalResults() {
+    const quizSection = document.getElementById('quiz-section');
+    const resultsSection = document.getElementById('results-section');
+    
+    quizSection.classList.add('hidden');
+    resultsSection.classList.remove('hidden');
+    
+    // Сохраняем финальные результаты
+    const totalQuestions = questions[state.selectedLanguage][state.selectedLevel].length;
+    const accuracy = Math.round((state.score / totalQuestions) * 100);
+    const earnedCoins = state.score * 5;
+    const earnedXP = state.score * 10;
+    
+    const finalScore = document.getElementById('final-score');
+    finalScore.innerHTML = `
+        <div class="result-message correct-answer">
+            <span class="emoji">🎉</span>
+            <h2>Отличная работа!</h2>
+            
+            <div class="results-stats">
+                <div class="result-stat">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-info">
+                        <h3>Правильных ответов</h3>
+                        <p class="stat-value">${state.score} из ${totalQuestions}</p>
+                    </div>
+                </div>
+                
+                <div class="result-stat">
+                    <div class="stat-icon">⭐️</div>
+                    <div class="stat-info">
+                        <h3>Точность</h3>
+                        <p class="stat-value">${accuracy}%</p>
+                    </div>
+                </div>
+                
+                <div class="result-stat">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <h3>Заработано монет</h3>
+                        <p class="stat-value">+${earnedCoins}</p>
+                    </div>
+                </div>
+                
+                <div class="result-stat">
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-info">
+                        <h3>Опыт</h3>
+                        <p class="stat-value">+${earnedXP} XP</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="results-buttons">
+                <button onclick="restartQuiz()" class="restart-button">
+                    🔄 Пройти ещё раз
+                </button>
+                <button onclick="showProfile()" class="profile-button">
+                    👤 Перейти в профиль
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // Эффект конфетти
+    confetti({
+        particleCount: 200,
+        spread: 90,
+        origin: { y: 0.3 }
+    });
+}
+
+// Запуск таймера
+function startTimer() {
+    const timerElement = document.getElementById('timer');
+    let timeLeft = state.timePerQuestion;
+    
+    timerElement.innerHTML = `
+        <div class="timer-container">
+            <div class="timer-bar"></div>
+            <span class="timer-text">${timeLeft}</span>
+        </div>
+    `;
+    
+    const timerBar = timerElement.querySelector('.timer-bar');
+    const timerText = timerElement.querySelector('.timer-text');
+    
+    state.timer = setInterval(() => {
+        timeLeft--;
+        timerText.textContent = timeLeft;
+        timerBar.style.width = `${(timeLeft / state.timePerQuestion) * 100}%`;
+        
+        if (timeLeft <= 5) {
+            timerBar.classList.add('timer-warning');
+        }
+        
+        if (timeLeft <= 0) {
+            clearInterval(state.timer);
+            checkAnswer(null, questions[state.selectedLanguage][state.selectedLevel]);
+        }
+    }, 1000);
+}
+
+// Перезапуск теста
+function restartQuiz() {
+    // Сбрасываем состояние
+    state.currentQuestion = 0;
+    state.score = 0;
+    
+    // Скрываем все секции
+    hideAllSections();
+    
+    // Показываем секцию выбора языка
+    const languageSection = document.getElementById('language-choice');
+    languageSection.classList.remove('hidden');
+    languageSection.style.opacity = '1';
+    languageSection.style.transform = 'translateY(0)';
+    
+    // Сбрасываем выбранный язык и уровень
+    state.selectedLanguage = '';
+    state.selectedLevel = '';
+}
+
+// Покупка подсказки
+function buyHint() {
+    if (state.coins >= 10) {
+        state.coins -= 10;
+        state.hints.regular++;
+        updateCoinsDisplay();
+        showNotification('💡 Подсказка куплена!', 'success');
+        localStorage.setItem('coins', state.coins);
+        localStorage.setItem('hints', JSON.stringify(state.hints));
+        showShop(); // Обновляем отображение магазина
+    } else {
+        showNotification('Недостаточно монет!', 'error');
+    }
+}
+
+// Покупка бустера опыта
+function buyXPBooster() {
+    if (state.coins >= 30) {
+        state.coins -= 30;
+        state.xpBoosterActive = true;
+        updateCoinsDisplay();
+        showNotification('⚡️ Бустер XP активирован на 1 час!', 'success');
+        localStorage.setItem('coins', state.coins);
+        showShop(); // Обновляем отображение магазина
+        
+        // Сохраняем время активации бустера
+        const boosterEndTime = Date.now() + 3600000; // 1 час
+        localStorage.setItem('xpBoosterEndTime', boosterEndTime);
+        
+        setTimeout(() => {
+            state.xpBoosterActive = false;
+            showNotification('Действие бустера XP закончилось', 'info');
+            localStorage.removeItem('xpBoosterEndTime');
+        }, 3600000);
+    } else {
+        showNotification('Недостаточно монет!', 'error');
+    }
+}
+
+// Показ ежедневных заданий
+function showDailyTasks() {
+    hideAllSections();
+    const tasksSection = document.getElementById('daily-tasks-section');
+    
+    // Очищаем секцию перед добавлением нового содержимого
+    tasksSection.innerHTML = `
+        <div class="tasks-header">
+            <div class="tasks-title">
+                <h2>📅 Ежедневные задания</h2>
+                <p class="tasks-subtitle">Выполняйте задания и получайте награды</p>
+            </div>
+            <div class="coins-display">
+                <p class="coins-balance">💰 ${state.coins}</p>
+                <p class="coins-label">монет</p>
+            </div>
+        </div>
+        <div class="tasks-container">
+            ${state.dailyTasks.map(task => `
+                <div class="task-card">
+                    <div class="task-info">
+                        <h4>${task.description}</h4>
+                        <p class="task-reward">Награда: ${task.reward} монет</p>
+                    </div>
+                    <div class="task-progress">
+                        <div class="progress-bar">
+                            <div class="progress" style="width: ${(task.progress / task.target) * 100}%"></div>
+                        </div>
+                        <p class="progress-text">${task.progress}/${task.target}</p>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+
+    // Показываем секцию с анимацией
+    tasksSection.classList.remove('hidden');
+    requestAnimationFrame(() => {
+        tasksSection.style.opacity = '1';
+        tasksSection.style.transform = 'translateY(0)';
+    });
+}
+
+// Создаем контейнер для уведомлений, если его еще нет
+function createNotificationContainer() {
+    let container = document.querySelector('.notification-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'notification-container';
+        document.body.appendChild(container);
+    }
+    return container;
+}
+
+// Обновленная функция показа уведомлений
+function showNotification(message, type = 'info') {
+    const container = createNotificationContainer();
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    
+    container.appendChild(notification);
+    
+    // Анимация появления
+    requestAnimationFrame(() => {
+        notification.classList.add('show');
+    });
+    
+    // Автоматическое удаление
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            notification.remove();
+            // Если в контейнере больше нет уведомлений, удаляем его
+            if (container.children.length === 0) {
+                container.remove();
+            }
+        }, 300);
+    }, 3000);
+}
+
+// Обновленная функция показа достижений
+function showAchievementNotification(achievement) {
+    const container = createNotificationContainer();
+    const notification = document.createElement('div');
+    notification.className = 'achievement-notification';
+    notification.innerHTML = `
+        <div class="achievement-icon">${achievement.icon}</div>
+        <div class="achievement-info">
+            <h4>🏆 Новое достижение!</h4>
+            <h4>${achievement.name}</h4>
+            <p>${achievement.description}</p>
+        </div>
+    `;
+    
+    container.appendChild(notification);
+    
+    // Звуковой эффект
+    const audio = new Audio('achievement.mp3');
+    audio.play().catch(() => {});
+    
+    // Анимация появления
+    requestAnimationFrame(() => {
+        notification.classList.add('show');
+    });
+    
+    // Эффект конфетти
+    confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { x: 1, y: 0 }
+    });
+    
+    // Автоматическое удаление
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            notification.remove();
+            if (container.children.length === 0) {
+                container.remove();
+            }
+        }, 500);
+    }, 5000);
+}
+
+// Обновление прогресса заданий
+function updateTaskProgress(taskType) {
+    state.dailyTasks.forEach(task => {
+        switch(taskType) {
+            case 'question':
+                if (task.description.includes('вопросов')) {
+                    task.progress = Math.min(task.progress + 1, task.target);
+                }
+                break;
+            case 'xp':
+                if (task.description.includes('XP')) {
+                    task.progress = Math.min(task.progress + 10, task.target);
+                }
+                break;
+            case 'hint':
+                if (task.description.includes('подсказку')) {
+                    task.progress = Math.min(task.progress + 1, task.target);
+                }
+                break;
+        }
+
+        // Проверяем завершение задания
+        if (task.progress === task.target) {
+            state.coins += task.reward;
+            showNotification(`Задание выполнено! +${task.reward} монет`, 'success');
+            updateCoinsDisplay();
+            localStorage.setItem('coins', state.coins);
+        }
+    });
+
+    // Обновляем отображение заданий если они открыты
+    const tasksSection = document.getElementById('daily-tasks-section');
+    if (!tasksSection.classList.contains('hidden')) {
+        showDailyTasks(); // Обновляем отображение
+    }
+}
+
+// Использование подсказки
+function useHint() {
+    if (state.hintsAvailable > 0) {
+        state.hintsAvailable--;
+        const currentQ = questions[state.selectedLanguage][state.selectedLevel][state.currentQuestion];
+        
+        let hintText = '';
+        if (currentQ.type === 'multiple-choice') {
+            const correctAnswer = currentQ.answers[currentQ.correct - 1];
+            hintText = `Подсказка: Правильный ответ начинается с "${correctAnswer[0]}"`;
+        } else {
+            hintText = `Подсказка: Обратите внимание на форму глагола`;
+        }
+        
+        showNotification(hintText, 'info');
+        updateTaskProgress('hint');
+    } else {
+        showNotification('У вас нет доступных подсказок!', 'error');
+    }
+}
+
+// Показ профиля
+function showProfile() {
+    showSection('profile-section');
+    setTimeout(() => {
+        const profileSection = document.getElementById('profile-section');
+        const accuracy = state.userProfile.totalQuestions > 0 
+            ? Math.round((state.userProfile.correctAnswers / state.userProfile.totalQuestions) * 100) 
+            : 0;
+        
+        // Фильтруем только полученные достижения
+        const unlockedAchievements = state.achievements.filter(achievement => 
+            state.userProfile.achievements.includes(achievement.id)
+        );
+        
+        profileSection.innerHTML = `
+            <div class="profile-header">
+                <h2>👤 Профиль</h2>
+                <button onclick="toggleTheme()" class="theme-button">
+                    ${state.isDarkTheme ? '☀️ Светлая тема' : '🌙 Тёмная тема'}
+                </button>
+            </div>
+            
+            <div class="profile-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">👑</div>
+                    <div class="stat-info">
+                        <h3>Уровень ${state.userProfile.level}</h3>
+                        <div class="xp-progress">
+                            <div class="xp-bar" style="width: ${(state.userProfile.xp / state.xpToNextLevel) * 100}%"></div>
+                        </div>
+                        <p>${state.userProfile.xp}/${state.xpToNextLevel} XP</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <h3>Статистика</h3>
+                        <p>Всего вопросов: ${state.userProfile.totalQuestions}</p>
+                        <p>Правильных ответов: ${state.userProfile.correctAnswers}</p>
+                        <p>Точность: ${accuracy}%</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <h3>Монеты</h3>
+                        <p>${state.coins} монет</p>
+                    </div>
+                </div>
+            </div>
+            
+            ${unlockedAchievements.length > 0 ? `
+                <div class="achievements-section">
+                    <h3>🏆 Полученные достижения</h3>
+                    <div class="achievements-grid">
+                        ${unlockedAchievements.map(achievement => `
+                            <div class="achievement-card">
+                                <div class="achievement-icon">${achievement.icon}</div>
+                                <h4>${achievement.name}</h4>
+                                <p>${achievement.description}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            ` : ''}
+        `;
+    }, 300);
+}
+
+// Проверка достижений
+function checkAchievements() {
+    const achievements = state.achievements;
+    const userAchievements = state.userProfile.achievements;
+    
+    // Первая победа
+    if (!userAchievements.includes('first_win') && state.userProfile.correctAnswers > 0) {
+        unlockAchievement('first_win');
+    }
+    
+    // Идеальный результат
+    if (!userAchievements.includes('perfect_score') && 
+        state.score === questions[state.selectedLanguage][state.selectedLevel].length) {
+        unlockAchievement('perfect_score');
+    }
+    
+    // Богатый студент
+    if (!userAchievements.includes('rich_student') && state.coins >= 1000) {
+        unlockAchievement('rich_student');
+    }
+}
+
+// Разблокировка достижения
+function unlockAchievement(achievementId) {
+    if (!state.userProfile.achievements.includes(achievementId)) {
+        state.userProfile.achievements.push(achievementId);
+        const achievement = state.achievements.find(a => a.id === achievementId);
+        showAchievementNotification(achievement);
+        localStorage.setItem('achievements', JSON.stringify(state.userProfile.achievements));
+    }
+}
+
+// Обновление XP и уровня
+function updateXP(amount) {
+    state.userProfile.xp += amount;
+    
+    while (state.userProfile.xp >= state.xpToNextLevel) {
+        state.userProfile.xp -= state.xpToNextLevel;
+        state.userProfile.level++;
+        showNotification(`🎉 Поздравляем! Вы достигли ${state.userProfile.level} уровня!`, 'success');
+    }
+    
+    localStorage.setItem('userLevel', state.userProfile.level);
+    localStorage.setItem('userXP', state.userProfile.xp);
+}
+
+// Функции для подсказок
+function useFiftyFifty() {
+    if (state.hints.fiftyFifty > 0) {
+        state.hints.fiftyFifty--;
+        const buttons = document.querySelectorAll('.option-button');
+        const currentQ = questions[state.selectedLanguage][state.selectedLevel][state.currentQuestion];
+        const correctAnswer = currentQ.correct;
+        
+        let removed = 0;
+        buttons.forEach((button, index) => {
+            if (index + 1 !== correctAnswer && removed < 2) {
+                button.style.display = 'none';
+                removed++;
+            }
+        });
+        
+        showNotification('50/50 подсказка использована!', 'info');
+        checkHintAchievement('fiftyFifty');
+    } else {
+        showNotification('У вас нет подсказок 50/50!', 'error');
+    }
+}
+
+function useSkipQuestion() {
+    if (state.hints.skipQuestion > 0) {
+        state.hints.skipQuestion--;
+        state.currentQuestion++;
+        showQuestion(questions[state.selectedLanguage][state.selectedLevel]);
+        showNotification('Вопрос пропущен!', 'info');
+        checkHintAchievement('skipQuestion');
+    } else {
+        showNotification('У вас нет подсказок для пропуска!', 'error');
+    }
+}
+
+function useExtraTime() {
+    if (state.hints.extraTime > 0) {
+        state.hints.extraTime--;
+        clearInterval(state.timer);
+        state.timePerQuestion += 30; // Добавляем 30 секунд
+        startTimer();
+        showNotification('Добавлено 30 секунд!', 'info');
+        checkHintAchievement('extraTime');
+    } else {
+        showNotification('У вас нет подсказок дополнительного времени!', 'error');
+    }
+}
+
+// Функция проверки достижений за использование подсказок
+function checkHintAchievement(hintType) {
+    const usedHints = JSON.parse(localStorage.getItem('usedHints') || '[]');
+    if (!usedHints.includes(hintType)) {
+        usedHints.push(hintType);
+        localStorage.setItem('usedHints', JSON.stringify(usedHints));
+        
+        if (usedHints.length === Object.keys(state.hints).length) {
+            unlockAchievement('hint_master');
+        }
+    }
+}
+
+// Добавляем новую функцию для покупки пропуска вопроса
+function buySkip() {
+    if (state.coins >= 15) {
+        state.coins -= 15;
+        state.hints.skipQuestion++;
+        updateCoinsDisplay();
+        showNotification('⏭️ Пропуск вопроса куплен!', 'success');
+        localStorage.setItem('coins', state.coins);
+        localStorage.setItem('hints', JSON.stringify(state.hints));
+        showShop(); // Обновляем отображение магазина
+    } else {
+        showNotification('Недостаточно монет!', 'error');
+    }
+}
+
+// Добавляем новую функцию для покупки дополнительного времени
+function buyExtraTime() {
+    if (state.coins >= 20) {
+        state.coins -= 20;
+        state.hints.extraTime++;
+        updateCoinsDisplay();
+        showNotification('⏰ Дополнительное время куплено!', 'success');
+        localStorage.setItem('coins', state.coins);
+        localStorage.setItem('hints', JSON.stringify(state.hints));
+        showShop(); // Обновляем отображение магазина
+    } else {
+        showNotification('Недостаточно монет!', 'error');
+    }
+}
+
+// Добавляем функции в глобальную область видимости
+window.buySkip = buySkip;
+window.buyExtraTime = buyExtraTime;
+
+// Добавляем функцию для загрузки сохраненных подсказок при старте
+function loadSavedHints() {
+    const savedHints = localStorage.getItem('hints');
+    if (savedHints) {
+        state.hints = JSON.parse(savedHints);
+    }
+    
+    // Проверяем активный бустер XP
+    const boosterEndTime = localStorage.getItem('xpBoosterEndTime');
+    if (boosterEndTime) {
+        const timeLeft = boosterEndTime - Date.now();
+        if (timeLeft > 0) {
+            state.xpBoosterActive = true;
+            setTimeout(() => {
+                state.xpBoosterActive = false;
+                showNotification('Действие бустера XP закончилось', 'info');
+                localStorage.removeItem('xpBoosterEndTime');
+            }, timeLeft);
+        } else {
+            localStorage.removeItem('xpBoosterEndTime');
+        }
+    }
+}
+
+// Добавляем вызов функции загрузки при инициализации
+document.addEventListener('DOMContentLoaded', function() {
+    // ... существующий код ...
+    loadSavedHints();
+});
+
+// Добавляем все функции в глобальную область видимости
+window.buyHint = buyHint;
+window.buyXPBooster = buyXPBooster;
+window.buySkip = buySkip;
+window.buyExtraTime = buyExtraTime;
+
+// Добавляем функционал для меню
+const menuToggle = document.getElementById('menu-toggle');
+const sidebar = document.querySelector('.sidebar');
+const mainContent = document.querySelector('.main-content');
+
+menuToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('open');
+    mainContent.classList.toggle('sidebar-open');
+    
+    // Меняем иконку
+    const menuIcon = menuToggle.querySelector('.menu-icon');
+    if (sidebar.classList.contains('open')) {
+        menuIcon.textContent = '×';
+        menuToggle.style.left = '290px'; // Для десктопа
+    } else {
+        menuIcon.textContent = '☰';
+        menuToggle.style.left = '1rem';
+    }
+});
+
+// Закрываем меню при клике вне его на мобильных устройствах
+document.addEventListener('click', (e) => {
+    if (window.innerWidth <= 768) {
+        if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+            sidebar.classList.remove('open');
+            mainContent.classList.remove('sidebar-open');
+            menuToggle.querySelector('.menu-icon').textContent = '☰';
+            menuToggle.style.left = '1rem';
+        }
+    }
+});
+
+// Обновляем позицию кнопки при изменении размера окна
+window.addEventListener('resize', () => {
+    if (window.innerWidth <= 768) {
+        menuToggle.style.left = '1rem';
+    } else if (sidebar.classList.contains('open')) {
+        menuToggle.style.left = '290px';
+    }
+});
+
+// Добавим функции для работы со статистикой
+function updateStatistics(isCorrect) {
+    // Обновляем общую статистику
+    state.userProfile.totalQuestions++;
+    if (isCorrect) {
+        state.userProfile.correctAnswers++;
+    }
+
+    // Сохраняем в localStorage
+    localStorage.setItem('totalQuestions', state.userProfile.totalQuestions);
+    localStorage.setItem('correctAnswers', state.userProfile.correctAnswers);
+
+    // Обновляем отображение если открыт профиль
+    updateProfileStats();
+}
+
+function updateProfileStats() {
+    const profileSection = document.getElementById('profile-section');
+    if (!profileSection.classList.contains('hidden')) {
+        const accuracy = state.userProfile.totalQuestions > 0 
+            ? Math.round((state.userProfile.correctAnswers / state.userProfile.totalQuestions) * 100) 
+            : 0;
+
+        // Обновляем статистику в профиле
+        const statsHtml = `
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <h3>Статистика</h3>
+                        <p>Всего вопросов: ${state.userProfile.totalQuestions}</p>
+                        <p>Правильных ответов: ${state.userProfile.correctAnswers}</p>
+                        <p>Точность: ${accuracy}%</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⭐️</div>
+                    <div class="stat-info">
+                        <h3>Уровень ${state.userProfile.level}</h3>
+                        <div class="xp-progress">
+                            <div class="xp-bar" style="width: ${(state.userProfile.xp / state.xpToNextLevel) * 100}%"></div>
+                        </div>
+                        <p>${state.userProfile.xp}/${state.xpToNextLevel} XP</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <h3>Монеты</h3>
+                        <p>${state.coins} монет</p>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Обновляем секцию статистики
+        const statsSection = profileSection.querySelector('.profile-stats');
+        if (statsSection) {
+            statsSection.innerHTML = statsHtml;
+        }
+    }
 }
