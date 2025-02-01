@@ -1,62 +1,70 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="bg">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Языковой тренажёр</title>
+    <title>Езиков тренажор</title>
+
+    <!-- Връзка към външен CSS файл -->
     <link rel="stylesheet" href="styles.css">
+
+    <!-- Връзка към шрифта Inter от Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Библиотеки за анимации и диаграми -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
-<!-- Боковое меню -->
+<!-- Странично меню -->
 <div class="sidebar">
-    <h1>Языковой тренажёр</h1>
-    <button onclick="toggleTheme()">🌙 Тёмная тема</button>
-    <button onclick="showProfile()">👤 Профиль</button>
-    <button onclick="showShop()">🛒 Магазин</button>
-    <button onclick="showDailyTasks()">📅 Ежедневные задания</button>
-    <button onclick="restartQuiz()">🔄 Начать заново</button>
+    <h1>Езиков тренажор</h1>
+    <button onclick="toggleTheme()"> 🌙 Тъмна тема</button>
+    <button onclick="showProfile()"> 👤 Профил</button>
+    <button onclick="showShop()"> 🛍️ Магазин</button>
+    <button onclick="restartQuiz()"> Започни отначало</button>
 </div>
-<!-- Добавляем кнопку меню -->
+
+<!-- Бутон за отваряне на менюто в мобилен изглед -->
 <button id="menu-toggle" class="menu-toggle">
     <span class="menu-icon">☰</span>
 </button>
-<!-- Основной контент -->
+
+<!-- Основно съдържание -->
 <div class="main-content">
-    <header class="main-header">
-        <div class="header-content">
-            <h1>Папа, с юбилеем! 🎉</h1>
-            <p class="header-subtitle">Учи языки с удовольствием!</p>
-        </div>
-    </header>
+
+    <!-- Прогрес бар -->
     <div id="progress-bar">
         <div id="progress"></div>
     </div>
-    <!-- Выбор языка -->
+
+    <!-- Избор на език -->
     <section id="language-choice">
-        <h2>🌍 Выбери язык</h2>
+        <h2> Избери език</h2>
         <div class="buttons">
-            <button onclick="chooseLanguage('english')">🇬🇧 Английский</button>
-            <button onclick="chooseLanguage('bulgarian')">🇧🇬 Болгарский</button>
+            <button onclick="chooseLanguage('english')">🇬🇧 Английски</button>
+            <button onclick="chooseLanguage('german')">🇩🇪 Немски</button>
         </div>
     </section>
-    <!-- Выбор уровня -->
+
+    <!-- Избор на ниво на трудност -->
     <section id="level-choice" class="hidden">
-        <h2>📊 Выберите уровень сложности</h2>
+        <h2> Изберете ниво на трудност</h2>
         <div class="buttons">
-            <button onclick="chooseLevel('A1')">A1 (Начальный)</button>
-            <button onclick="chooseLevel('A2')">A2 (Элементарный)</button>
-            <button onclick="chooseLevel('B1')">B1 (Средний)</button>
-            <button onclick="chooseLevel('B2')">B2 (Выше среднего)</button>
-            <button onclick="chooseLevel('C1')">C1 (Продвинутый)</button>
-            <button onclick="chooseLevel('C2')">C2 (Профессиональный)</button>
+            <button onclick="chooseLevel('A1')">A1 (Начинаещ)</button>
+            <button onclick="chooseLevel('A2')">A2 (Елементарно)</button>
+            <button onclick="chooseLevel('B1')">B1 (Средно)</button>
+            <button onclick="chooseLevel('B2')">B2 (Над средното)</button>
+            <button onclick="chooseLevel('C1')">C1 (Напреднал)</button>
+            <button onclick="chooseLevel('C2')">C2 (Професионален)</button>
         </div>
     </section>
-    <!-- Тесты -->
+
+    <!-- Тестова секция -->
     <section id="quiz-section" class="hidden">
-        <h2>📝 Тест</h2>
+        <h2> Тест</h2>
         <div class="quiz-container">
             <p id="question"></p>
             <div id="audio"></div>
@@ -68,70 +76,71 @@
             <p id="result"></p>
             <p id="timer"></p>
             <p id="score"></p>
-            <button onclick="useHint()">💡 Использовать подсказку</button>
+            <button onclick="useHint()"> Използвай подсказка</button>
         </div>
     </section>
-    <!-- Результаты -->
+
+    <!-- Резултати -->
     <section id="results-section" class="hidden">
-        <h2>📊 Результаты</h2>
+        <h2> Резултати</h2>
         <p id="final-score"></p>
         <div id="achievements-section">
-            <h3>🏆 Достижения</h3>
+            <h3> Постижения</h3>
             <div id="achievements-list"></div>
         </div>
         <div class="social-share">
-            <button onclick="shareOnFacebook()">Поделиться в Facebook</button>
-            <button onclick="shareOnTwitter()">Поделиться в Twitter</button>
+            <button onclick="shareOnFacebook()">Сподели във Facebook</button>
+            <button onclick="shareOnTwitter()">Сподели в Twitter</button>
         </div>
     </section>
-    <!-- Профиль -->
+
+    <!-- Профил -->
     <section id="profile-section" class="hidden">
         <button id="close-profile" onclick="closeProfile()">×</button>
-        <h2>👤 Профиль</h2>
+        <h2> Профил</h2>
         <div class="profile-info">
-            <p>Имя: <span id="profile-name">Гость</span></p>
-            <p>Уровень: <span id="profile-level">1</span></p>
-            <p>Опыт: <span id="profile-xp">0</span>/100</p>
-            <p>Монеты: <span id="profile-coins">0</span></p>
+            <p>Име: <span id="profile-name">Гост</span></p>
+            <p>Ниво: <span id="profile-level">1</span></p>
+            <p>Опит: <span id="profile-xp">0</span>/100</p>
+            <p>Монети: <span id="profile-coins">0</span></p>
         </div>
         <div id="profile-achievements">
-            <h3>🏆 Достижения</h3>
+            <h3> Постижения</h3>
             <div id="profile-achievements-list"></div>
         </div>
         <div id="profile-progress">
-            <h3>📊 Прогресс</h3>
+            <h3> Прогрес</h3>
             <canvas id="progress-chart"></canvas>
         </div>
-        <button onclick="toggleTheme()">🌙 Сменить тему</button>
-        <button onclick="resetProgress()">🔄 Сбросить прогресс</button>
+        <button onclick="toggleTheme()"> Смени тема</button>
+        <button onclick="resetProgress()"> Нулирай прогрес</button>
     </section>
+
     <!-- Магазин -->
     <section id="shop-section" class="hidden">
         <button id="close-shop" onclick="closeShop()">×</button>
-        <h2>🛒 Магазин</h2>
+        <h2> Магазин</h2>
         <div class="shop-items">
             <div class="shop-item">
                 <h3>Подсказка</h3>
-                <p>Стоимость: 10 монет</p>
-                <button onclick="buyHint()">Купить</button>
+                <p>Цена: 10 монети</p>
+                <button onclick="buyHint()">Купи</button>
             </div>
             <div class="shop-item">
-                <h3>Разблокировать уровень A2</h3>
-                <p>Стоимость: 50 монет</p>
-                <button onclick="unlockLevel('A2')">Купить</button>
+                <h3>Отключи ниво A2</h3>
+                <p>Цена: 50 монети</p>
+                <button onclick="unlockLevel('A2')">Купи</button>
             </div>
         </div>
     </section>
-    <!-- Ежедневные задания -->
-    <section id="daily-tasks-section" class="hidden">
-        <button id="close-daily-tasks" onclick="closeDailyTasks()">×</button>
-        <h2>📅 Ежедневные задания</h2>
-        <div id="daily-tasks-list"></div>
-    </section>
 </div>
-<!-- Аудио для звуковых эффектов -->
-<audio id="correct-sound" src="correct.mp3"></audio>
-<audio id="wrong-sound" src="wrong.mp3"></audio>
+
+<!-- Аудио ефекти -->
+<audio id="correct-sound" src="assets/audio/correct.mp3"></audio>
+<audio id="wrong-sound" src="assets/audio/wrong.mp3"></audio>
+
+<!-- Основен JavaScript файл -->
 <script src="script.js" defer></script>
 </body>
+
 </html>
