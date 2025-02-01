@@ -8,12 +8,12 @@
     --success: #10b981;
     --warning: #f59e0b;
     --error: #ef4444;
-    
+
     /* Обновляем градиенты */
     --gradient-main: linear-gradient(135deg, #4f46e5, #7c3aed);
     --gradient-hover: linear-gradient(135deg, #3730a3, #6d28d9);
     --gradient-success: linear-gradient(135deg, #059669, #10b981);
-    
+
     /* Обновляем тени */
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -25,6 +25,56 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+/* Стилове за приветствената секция */
+#welcome-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: var(--gradient-main);
+    color: white;
+    text-align: center;
+    padding: 2rem;
+}
+
+.welcome-content {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.welcome-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.welcome-message {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.start-button {
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    background: white;
+    color: var(--primary);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.start-button:hover {
+    background: var(--primary-dark);
+    color: white;
+    transform: translateY(-2px);
+}
+/* Стилове за тъмната тема */
+.dark-theme .welcome-message {
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 body {
@@ -124,15 +174,40 @@ section {
     max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
-}
-
-section:not(.hidden) {
+    transition: opacity 0.3s ease, transform 0.3s ease;
     opacity: 1;
     transform: translateY(0);
+    position: relative;
+    z-index: 1;
 }
 
-.hidden {
+section.hidden {
     display: none;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.main-content {
+    position: relative;
+    min-height: 100vh;
+}
+
+.main-content section {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: 2rem auto;
+}
+
+/* Улучшаем плавность переходов */
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.fade-enter, .fade-leave-to {
+    opacity: 0;
+    transform: translateY(20px);
 }
 
 /* Заголовки */
@@ -328,17 +403,32 @@ h3 {
 }
 
 .notification {
-    position: relative;
-    padding: 1rem 1.5rem;
-    border-radius: 12px;
-    background: var(--gradient-main);
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 1rem;
+    border-radius: 8px;
+    z-index: 1000;
+    transition: opacity 0.3s ease;
+}
+
+.notification.success {
+    background-color: var(--success);
     color: white;
-    font-size: 1rem;
-    font-weight: 500;
-    box-shadow: var(--shadow-lg);
-    transform: translateX(120%);
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    max-width: 300px;
+}
+
+.notification.error {
+    background-color: var(--error);
+    color: white;
+}
+
+.notification.info {
+    background-color: var(--primary);
+    color: white;
+}
+
+.notification.fade-out {
+    opacity: 0; /* Уменьшаем непрозрачность для анимации исчезновения */
 }
 
 .notification.show {
@@ -412,16 +502,16 @@ h3 {
     --text-secondary: #94a3b8;
     --text-muted: #64748b;
     --border: rgba(255, 255, 255, 0.1);
-    
+
     /* Обновленные градиенты для тёмной темы */
     --gradient-main: linear-gradient(135deg, #4f46e5, #7c3aed);
     --gradient-hover: linear-gradient(135deg, #3730a3, #6d28d9);
-    
+
     /* Обновленные тени */
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
     --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
-    
+
     background: linear-gradient(135deg, #0a0f1c, #151b2d);
 }
 
@@ -528,8 +618,8 @@ h3 {
 }
 
 /* Добавляем красивые эффекты для карточек */
-.shop-item, 
-.task-card, 
+.shop-item,
+.task-card,
 .stat-card,
 .achievement-card {
     background: white;
@@ -547,8 +637,8 @@ h3 {
     display: none;
 }
 
-.shop-item:hover, 
-.task-card:hover, 
+.shop-item:hover,
+.task-card:hover,
 .stat-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
@@ -642,11 +732,11 @@ button:hover {
     .main-content {
         padding: 2rem;
     }
-    
+
     section {
         padding: 2rem;
     }
-    
+
     .shop-items,
     .achievements-grid {
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -660,11 +750,11 @@ button:hover {
         width: 100%;
         padding: 1.5rem;
     }
-    
+
     .question {
         font-size: 1.5rem;
     }
-    
+
     .option-button {
         padding: 1.5rem;
         font-size: 1.1rem;
@@ -723,7 +813,7 @@ button:hover {
         margin-left: 0;
         width: 100%;
     }
-    
+
     .sidebar {
         width: 280px;
     }
@@ -1002,7 +1092,7 @@ button:hover {
     .results-stats {
         grid-template-columns: 1fr;
     }
-    
+
     .results-buttons {
         flex-direction: column;
     }
@@ -1013,12 +1103,12 @@ button:hover {
     .main-content {
         padding: 1rem;
     }
-    
+
     section {
         padding: 2rem;
         margin: 1rem;
     }
-    
+
     .stats-container,
     .results-stats {
         grid-template-columns: repeat(2, 1fr);
@@ -1030,70 +1120,70 @@ button:hover {
     body {
         font-size: 14px;
     }
-    
+
     h2 {
         font-size: 1.8rem;
         margin-bottom: 2rem;
     }
-    
+
     /* Меню */
     .sidebar {
         width: 280px;
     }
-    
+
     .menu-toggle {
         width: 40px;
         height: 40px;
     }
-    
+
     /* Карточки */
     .stats-container,
     .results-stats {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
-    
+
     .stat-card {
         padding: 1.5rem;
     }
-    
+
     /* Вопросы */
     #question {
         font-size: 1.4rem;
         margin-bottom: 1.5rem;
     }
-    
+
     .option-button {
         padding: 1rem;
         font-size: 1rem;
     }
-    
+
     /* Результаты */
     .result-message {
         padding: 1.5rem;
         font-size: 1.1rem;
     }
-    
+
     .result-stat {
         padding: 1.2rem;
     }
-    
+
     .result-stat .stat-value {
         font-size: 1.4rem;
     }
-    
+
     /* Кнопки */
     .results-buttons {
         flex-direction: column;
         gap: 0.8rem;
     }
-    
+
     .restart-button,
     .profile-button {
         width: 100%;
         padding: 0.8rem;
     }
-    
+
     /* Уведомления */
     .achievement-notification {
         width: 90%;
@@ -1110,59 +1200,59 @@ button:hover {
         margin: 0.5rem;
         border-radius: 16px;
     }
-    
+
     h2 {
         font-size: 1.5rem;
         margin-bottom: 1.5rem;
     }
-    
+
     /* Меню */
     .sidebar {
         width: 100%;
     }
-    
+
     /* Статистика */
     .stat-card {
         padding: 1rem;
     }
-    
+
     .stat-icon {
         font-size: 1.8rem;
     }
-    
+
     /* Вопросы */
     #question {
         font-size: 1.2rem;
         margin-bottom: 1rem;
     }
-    
+
     /* Подсказки */
     .hints-panel {
         flex-direction: column;
         gap: 0.5rem;
     }
-    
+
     .hint-button {
         width: 100%;
         padding: 0.8rem;
     }
-    
+
     /* Магазин */
     .shop-items {
         grid-template-columns: 1fr;
     }
-    
+
     /* Достижения */
     .achievements-grid {
         grid-template-columns: 1fr;
     }
-    
+
     /* Уведомления */
     .achievement-notification {
         font-size: 0.9rem;
         padding: 0.8rem;
     }
-    
+
     .achievement-notification .achievement-icon {
         font-size: 2rem;
     }
@@ -1174,13 +1264,358 @@ button:hover {
         overflow-y: auto;
         padding: 1rem;
     }
-    
+
     .results-stats {
         grid-template-columns: repeat(2, 1fr);
     }
-    
+
     .result-message {
         max-height: 80vh;
         overflow-y: auto;
     }
+}
+
+.auth-container {
+    max-width: 450px;
+    margin: 2rem auto;
+    padding: 2.5rem;
+    background: white;
+    border-radius: 24px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background: var(--gradient-main);
+}
+
+.auth-container h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    background: var(--gradient-main);
+    -webkit-background-clip: text;
+    color: transparent;
+    text-align: center;
+}
+
+.auth-welcome {
+    text-align: center;
+    color: var(--gray-600);
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+.auth-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    padding: 0.5rem;
+    background: var(--gray-100);
+    border-radius: 16px;
+}
+
+.auth-tab {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.auth-tab.active {
+    background: white;
+    color: var(--primary);
+    box-shadow: var(--shadow-sm);
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.input-group {
+    position: relative;
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 1.2rem;
+    padding-left: 3rem;
+    border: 2px solid var(--gray-200);
+    border-radius: 12px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    background: var(--gray-50);
+}
+
+.auth-form input:focus {
+    border-color: var(--primary);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+}
+
+.input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    color: var(--gray-400);
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.auth-form input:focus + .input-icon {
+    color: var(--primary);
+}
+
+.auth-form button {
+    padding: 1.2rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    background: var(--gradient-main);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+}
+
+.auth-form button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 2rem 0;
+    color: var(--gray-400);
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gray-200);
+}
+
+.social-auth {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.social-button {
+    flex: 1;
+    padding: 1rem;
+    border: 2px solid var(--gray-200);
+    border-radius: 12px;
+    background: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.social-button:hover {
+    background: var(--gray-50);
+    transform: translateY(-2px);
+}
+
+/* Тёмная тема */
+.dark-theme .auth-container {
+    background: var(--surface);
+    border-color: var(--border);
+}
+
+.dark-theme .auth-tabs {
+    background: var(--surface-hover);
+}
+
+.dark-theme .auth-tab.active {
+    background: var(--primary);
+    color: white;
+}
+
+.dark-theme .auth-form input {
+    background: var(--surface-hover);
+    border-color: var(--border);
+    color: var(--text);
+}
+
+.dark-theme .auth-form input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2);
+}
+
+/* Адаптивность */
+@media (max-width: 480px) {
+    .auth-container {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+
+    .auth-form input,
+    .auth-form button {
+        padding: 1rem;
+    }
+}
+
+/* Стили для приветственного экрана */
+.welcome-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.guest-button {
+    padding: 1.2rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    background: var(--gradient-main);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.login-button {
+    padding: 1.2rem;
+    border: 2px solid var(--primary);
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.guest-button:hover,
+.login-button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.login-button:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.guest-info {
+    text-align: center;
+    color: var(--gray-500);
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--gray-50);
+    border-radius: 12px;
+}
+
+.back-button {
+    width: 100%;
+    padding: 1rem;
+    border: none;
+    background: var(--gray-100);
+    border-radius: 12px;
+    font-size: 1rem;
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.back-button:hover {
+    background: var(--gray-200);
+}
+
+/* Тёмная тема */
+.dark-theme .guest-info {
+    background: var(--surface-hover);
+    color: var(--text);
+}
+
+/* Анимации для секций */
+section {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 1;
+    transform: translateY(0);
+    position: relative;
+    z-index: 1;
+}
+
+section.hidden {
+    display: none;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+#language-choice {
+    margin-top: 2rem;
+}
+
+/* Стили для кнопок выбора языка */
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.buttons button {
+    padding: 1.5rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+    background: var(--gradient-main);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.buttons button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.task-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    box-shadow: var(--shadow-md);
+}
+
+.task-info {
+    margin-bottom: 0.5rem;
+}
+
+.progress-bar {
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress {
+    background: var(--primary);
+    height: 8px;
+    transition: width 0.3s ease;
 }
