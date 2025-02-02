@@ -1,146 +1,29 @@
 <!DOCTYPE html>
-<html lang="bg">
-
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Езиков тренажор</title>
-
-    <!-- Връзка към външен CSS файл -->
+    <title>Sooyaa Language Learning</title>
     <link rel="stylesheet" href="styles.css">
-
-    <!-- Връзка към шрифта Inter от Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- Библиотеки за анимации и диаграми -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Chettan+2:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-
 <body>
-<!-- Странично меню -->
-<div class="sidebar">
-    <h1>Езиков тренажор</h1>
-    <button onclick="toggleTheme()"> 🌙 Тъмна тема</button>
-    <button onclick="showProfile()"> 👤 Профил</button>
-    <button onclick="showShop()"> 🛍️ Магазин</button>
-    <button onclick="restartQuiz()"> Започни отначало</button>
+
+<!-- Экран загрузки -->
+<div id="loading-screen" class="loading-screen">
+    <img src="images/logo.png" alt="Logo" class="logo">
+    <img src="images/paw.png" alt="Paw" class="paw">
 </div>
 
-<!-- Бутон за отваряне на менюто в мобилен изглед -->
-<button id="menu-toggle" class="menu-toggle">
-    <span class="menu-icon">☰</span>
-</button>
-
-<!-- Основно съдържание -->
-<div class="main-content">
-
-    <!-- Прогрес бар -->
-    <div id="progress-bar">
-        <div id="progress"></div>
-    </div>
-
-    <!-- Избор на език -->
-    <section id="language-choice">
-        <h2> Избери език</h2>
-        <div class="buttons">
-            <button onclick="chooseLanguage('english')">🇬🇧 Английски</button>
-            <button onclick="chooseLanguage('german')">🇩🇪 Немски</button>
-        </div>
-    </section>
-
-    <!-- Избор на ниво на трудност -->
-    <section id="level-choice" class="hidden">
-        <h2> Изберете ниво на трудност</h2>
-        <div class="buttons">
-            <button onclick="chooseLevel('A1')">A1 (Начинаещ)</button>
-            <button onclick="chooseLevel('A2')">A2 (Елементарно)</button>
-            <button onclick="chooseLevel('B1')">B1 (Средно)</button>
-            <button onclick="chooseLevel('B2')">B2 (Над средното)</button>
-            <button onclick="chooseLevel('C1')">C1 (Напреднал)</button>
-            <button onclick="chooseLevel('C2')">C2 (Професионален)</button>
-        </div>
-    </section>
-
-    <!-- Тестова секция -->
-    <section id="quiz-section" class="hidden">
-        <h2> Тест</h2>
-        <div class="quiz-container">
-            <p id="question"></p>
-            <div id="audio"></div>
-            <div id="image"></div>
-            <div id="writing"></div>
-            <div id="fill-in-the-blank"></div>
-            <div id="matching"></div>
-            <div id="options"></div>
-            <p id="result"></p>
-            <p id="timer"></p>
-            <p id="score"></p>
-            <button onclick="useHint()"> Използвай подсказка</button>
-        </div>
-    </section>
-
-    <!-- Резултати -->
-    <section id="results-section" class="hidden">
-        <h2> Резултати</h2>
-        <p id="final-score"></p>
-        <div id="achievements-section">
-            <h3> Постижения</h3>
-            <div id="achievements-list"></div>
-        </div>
-        <div class="social-share">
-            <button onclick="shareOnFacebook()">Сподели във Facebook</button>
-            <button onclick="shareOnTwitter()">Сподели в Twitter</button>
-        </div>
-    </section>
-
-    <!-- Профил -->
-    <section id="profile-section" class="hidden">
-        <button id="close-profile" onclick="closeProfile()">×</button>
-        <h2> Профил</h2>
-        <div class="profile-info">
-            <p>Име: <span id="profile-name">Гост</span></p>
-            <p>Ниво: <span id="profile-level">1</span></p>
-            <p>Опит: <span id="profile-xp">0</span>/100</p>
-            <p>Монети: <span id="profile-coins">0</span></p>
-        </div>
-        <div id="profile-achievements">
-            <h3> Постижения</h3>
-            <div id="profile-achievements-list"></div>
-        </div>
-        <div id="profile-progress">
-            <h3> Прогрес</h3>
-            <canvas id="progress-chart"></canvas>
-        </div>
-        <button onclick="toggleTheme()"> Смени тема</button>
-        <button onclick="resetProgress()"> Нулирай прогрес</button>
-    </section>
-
-    <!-- Магазин -->
-    <section id="shop-section" class="hidden">
-        <button id="close-shop" onclick="closeShop()">×</button>
-        <h2> Магазин</h2>
-        <div class="shop-items">
-            <div class="shop-item">
-                <h3>Подсказка</h3>
-                <p>Цена: 10 монети</p>
-                <button onclick="buyHint()">Купи</button>
-            </div>
-            <div class="shop-item">
-                <h3>Отключи ниво A2</h3>
-                <p>Цена: 50 монети</p>
-                <button onclick="unlockLevel('A2')">Купи</button>
-            </div>
-        </div>
-    </section>
+<!-- Экран выбора языка -->
+<div id="language-screen" class="screen" style="display: none;">
+    <h1>Привет! Я Sooyaa, и я буду твоим помощником в изучении языков. Вместе мы обязательно добьемся успеха!</h1>
+    <img src="images/cat.png" alt="Cat" class="cat">
+    <button class="button" id="start-btn">Погнали</button>
 </div>
 
-<!-- Аудио ефекти -->
-<audio id="correct-sound" src="correct.mp3"></audio>
-<audio id="wrong-sound" src="wrong.mp3"></audio>
 
-<!-- Основен JavaScript файл -->
-<script src="script.js" defer></script>
+
+<script src="script.js"></script>
 </body>
-
 </html>
