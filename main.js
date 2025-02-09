@@ -1140,9 +1140,6 @@ function checkAnswer(answer, quizQuestions) {
                                 </div>
 
                                 <div class="results-buttons">
-                                    <button onclick="restartQuiz()" class="restart-button">
-                                        🔄 Опитай пак
-                                    </button>
                                     <button onclick="showProfile()" class="profile-button">
                                         👤 Към профила
                                     </button>
