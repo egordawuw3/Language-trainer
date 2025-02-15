@@ -1,33 +1,33 @@
-/* Основные переменные */
+/* Основни променливи */
 :root {
-    /* Обновляем цветовую палитру */
+    /* Актуализиране на цветовата палитра */
     --primary: #000000;
     --primary-dark: #000000;
     --secondary: #000000;
-    --accent: #357abd
+    --accent: #357abd;
     --success: #357abd;
     --warning: #357abd;
     --error: #357abd;
 
-    /* Обновляем градиенты */
+    /* Актуализиране на градиентите */
     --gradient-main: #000000;
     --gradient-hover: linear-gradient(135deg, #3730a3, #6d28d9);
     --gradient-success: linear-gradient(135deg, #059669, #10b981);
 
-    /* Обновляем тени */
+    /* Актуализиране на сенките */
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
     --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
-/* Базовые стили */
+/* Основни стилове */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Стилове за приветствената секция */
+/* Стилове за секцията с приветствие */
 #welcome-section {
     display: flex;
     justify-content: center;
@@ -71,6 +71,7 @@
     color: white;
     transform: translateY(-2px);
 }
+
 /* Стилове за тъмната тема */
 .dark-theme .welcome-message {
     color: var(--text-secondary);
@@ -93,7 +94,7 @@ body::before {
     display: none;
 }
 
-/* Боковое меню */
+/* Странично меню */
 .sidebar {
     width: 300px;
     background: white;
@@ -151,7 +152,7 @@ body::before {
     font-size: 1.5rem;
 }
 
-/* Основной контент */
+/* Основно съдържание */
 .main-content {
     margin-left: 0;
     width: 100%;
@@ -200,7 +201,7 @@ section.hidden {
     margin: 2rem auto;
 }
 
-/* Улучшаем плавность переходов */
+/* Подобряване на плавността на преходите */
 .fade-enter-active, .fade-leave-active {
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
@@ -210,7 +211,7 @@ section.hidden {
     transform: translateY(20px);
 }
 
-/* Заголовки */
+/* Заглавия */
 h2 {
     font-size: 2.5rem;
     font-weight: 700;
@@ -226,7 +227,7 @@ h3 {
     color: var(--gray-800);
 }
 
-/* Кнопки выбора языка и уровня */
+/* Бутони за избор на език и ниво */
 .language-buttons,
 .level-buttons {
     display: grid;
@@ -235,7 +236,7 @@ h3 {
     margin-top: 2rem;
 }
 
-/* Вопросы и ответы */
+/* Въпроси и отговори */
 .quiz-container {
     max-width: 800px;
     margin: 2rem auto;
@@ -254,7 +255,7 @@ h3 {
     text-align: center;
 }
 
-/* Улучшаем поле ввода */
+/* Подобряване на полето за въвеждане */
 .input-container {
     margin: 2rem 0;
 }
@@ -276,7 +277,7 @@ h3 {
     box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
 }
 
-/* Улучшаем кнопку проверки */
+/* Подобряване на бутона за проверка */
 .submit-button {
     width: 100%;
     margin-top: 1rem;
@@ -296,7 +297,7 @@ h3 {
     transform: translateY(-2px);
 }
 
-/* Улучшаем кнопку подсказки */
+/* Подобряване на бутона за подсказка */
 .hint-button {
     width: 100%;
     margin-top: 1.5rem;
@@ -323,7 +324,7 @@ h3 {
     cursor: not-allowed;
 }
 
-/* Улучшаем стили для результата */
+/* Подобряване на стиловете за резултата */
 #result {
     margin-top: 2rem;
     padding: 1.5rem;
@@ -345,7 +346,7 @@ h3 {
     border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
-/* Улучшаем тёмную тему */
+/* Подобряване на тъмната тема */
 .dark-theme .quiz-container {
     background: var(--surface);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
@@ -383,7 +384,7 @@ h3 {
     padding: 1.5rem;
 }
 
-/* Достижения */
+/* Постижения */
 .achievements-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -391,7 +392,7 @@ h3 {
     padding: 1.5rem;
 }
 
-/* Уведомления */
+/* Известия */
 .notification-container {
     position: fixed;
     top: 1rem;
@@ -428,7 +429,7 @@ h3 {
 }
 
 .notification.fade-out {
-    opacity: 0; /* Уменьшаем непрозрачность для анимации исчезновения */
+    opacity: 0; /* Намаляване на непрозрачността за анимация на изчезване */
 }
 
 .notification.show {
@@ -450,7 +451,7 @@ h3 {
     box-shadow: var(--shadow-lg);
 }
 
-/* Адаптивность уведомлений */
+/* Адаптивност на известията */
 @media (max-width: 768px) {
     .notification-container {
         width: calc(100% - 2rem);
@@ -493,7 +494,7 @@ h3 {
     to { opacity: 1; }
 }
 
-/* Тёмная тема */
+/* Тъмна тема */
 .dark-theme {
     --background: #0a0f1c;
     --surface: #151b2d;
@@ -503,11 +504,11 @@ h3 {
     --text-muted: #64748b;
     --border: rgba(255, 255, 255, 0.1);
 
-    /* Обновленные градиенты для тёмной темы */
+    /* Актуализирани градиенти за тъмна тема */
     --gradient-main: linear-gradient(135deg, #4f46e5, #7c3aed);
     --gradient-hover: linear-gradient(135deg, #3730a3, #6d28d9);
 
-    /* Обновленные тени */
+    /* Актуализирани сенки */
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
     --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
@@ -515,7 +516,7 @@ h3 {
     background: linear-gradient(135deg, #0a0f1c, #151b2d);
 }
 
-/* Стили для тёмной темы */
+/* Стилове за тъмна тема */
 .dark-theme section,
 .dark-theme .shop-item,
 .dark-theme .task-card,
@@ -598,7 +599,7 @@ h3 {
     color: var(--primary);
 }
 
-/* Улучшаем эффекты наведения в тёмной теме */
+/* Подобряване на ефектите при задържане в тъмна тема */
 .dark-theme .shop-item:hover,
 .dark-theme .task-card:hover,
 .dark-theme .stat-card:hover {
@@ -607,7 +608,7 @@ h3 {
     box-shadow: 0 12px 36px rgba(0, 0, 0, 0.3);
 }
 
-/* Улучшаем кнопки в тёмной теме */
+/* Подобряване на бутоните в тъмна тема */
 .dark-theme button {
     background: var(--gradient-main);
 }
@@ -617,7 +618,7 @@ h3 {
     transform: translateY(-2px);
 }
 
-/* Добавляем красивые эффекты для карточек */
+/* Добавяне на красиви ефекти за карти */
 .shop-item,
 .task-card,
 .stat-card,
@@ -645,7 +646,7 @@ h3 {
     border-color: var(--primary);
 }
 
-/* Добавляем эффект свечения для иконок */
+/* Добавяне на ефект на светене за икони */
 .achievement-icon,
 .coins-icon,
 .stat-icon {
@@ -654,7 +655,7 @@ h3 {
     margin-bottom: 1rem;
 }
 
-/* Улучшаем кнопки */
+/* Подобряване на бутоните */
 button {
     background: var(--gradient-main);
     color: white;
@@ -673,7 +674,7 @@ button:hover {
     box-shadow: var(--shadow-md);
 }
 
-/* Улучшаем прогресс бары */
+/* Подобряване на прогрес баровете */
 .progress-bar,
 .xp-progress,
 .task-progress {
@@ -690,7 +691,7 @@ button:hover {
     transition: width 0.3s ease;
 }
 
-/* Улучшаем тёмную тему */
+/* Подобряване на тъмната тема */
 .dark-theme {
     --neon-shadow: 0 0 10px rgba(99, 102, 241, 0.3),
                    0 0 20px rgba(99, 102, 241, 0.2),
@@ -702,7 +703,7 @@ button:hover {
     filter: none;
 }
 
-/* Добавляем анимации для достижений */
+/* Добавяне на анимации за постижения */
 @keyframes unlockAchievement {
     0% { transform: scale(0.8); opacity: 0; }
     50% { transform: scale(1.2); }
@@ -713,7 +714,7 @@ button:hover {
     animation: unlockAchievement 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-/* Улучшаем скроллбар */
+/* Подобряване на скролбара */
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -727,7 +728,7 @@ button:hover {
     border-radius: 4px;
 }
 
-/* Адаптивность */
+/* Адаптивност */
 @media (max-width: 1200px) {
     .main-content {
         padding: 2rem;
@@ -761,7 +762,7 @@ button:hover {
     }
 }
 
-/* Стили для кнопки меню */
+/* Стилове за бутона на менюто */
 .menu-toggle {
     position: fixed;
     top: 1rem;
@@ -785,7 +786,7 @@ button:hover {
     font-size: 1.5rem;
 }
 
-/* Обновляем стили сайдбара */
+/* Актуализиране на стиловете на страничното меню */
 .sidebar {
     transform: translateX(-100%);
     transition: transform 0.3s ease;
@@ -795,7 +796,7 @@ button:hover {
     transform: translateX(0);
 }
 
-/* Обновляем стили основного контента */
+/* Актуализиране на стиловете на основното съдържание */
 .main-content {
     margin-left: 0;
     width: 100%;
@@ -807,7 +808,7 @@ button:hover {
     width: calc(100% - 320px);
 }
 
-/* Медиа-запросы */
+/* Медийни заявки */
 @media (max-width: 768px) {
     .main-content.sidebar-open {
         margin-left: 0;
@@ -819,7 +820,7 @@ button:hover {
     }
 }
 
-/* Стили для главного заголовка */
+/* Стилове за основното заглавие */
 .main-header {
     background: transparent;
     padding: 1.5rem;
@@ -851,7 +852,7 @@ button:hover {
     letter-spacing: 0.3px;
 }
 
-/* Стили для тёмной темы */
+/* Стилове за тъмната тема */
 .dark-theme .main-header h1 {
     color: var(--text);
 }
@@ -864,7 +865,7 @@ button:hover {
     color: var(--text-secondary);
 }
 
-/* Адаптивность */
+/* Адаптивност */
 @media (max-width: 768px) {
     .main-header {
         margin: 0.5rem 1rem 1.5rem;
@@ -872,7 +873,7 @@ button:hover {
     }
 }
 
-/* Стили для статистики */
+/* Стилове за статистиката */
 .stats-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -920,7 +921,7 @@ button:hover {
     transition: width 0.3s ease;
 }
 
-/* Тёмная тема */
+/* Тъмна тема */
 .dark-theme .stat-card {
     background: var(--surface);
 }
@@ -933,7 +934,7 @@ button:hover {
     color: var(--text-secondary);
 }
 
-/* Улучшаем уведомления о достижениях */
+/* Подобряване на известията за постижения */
 .achievement-notification {
     position: fixed;
     top: 2rem;
@@ -971,7 +972,7 @@ button:hover {
     opacity: 0.9;
 }
 
-/* Улучшаем сообщения о правильных/неправильных ответах */
+/* Подобряване на съобщенията за правилни/грешни отговори */
 .result-message {
     padding: 2rem;
     border-radius: 16px;
@@ -1025,7 +1026,7 @@ button:hover {
     50% { transform: translateY(-10px); }
 }
 
-/* Стили для окна результатов */
+/* Стилове за прозореца с резултати */
 .results-stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -1087,7 +1088,7 @@ button:hover {
     transform: translateY(-2px);
 }
 
-/* Адаптивность */
+/* Адаптивност */
 @media (max-width: 768px) {
     .results-stats {
         grid-template-columns: 1fr;
@@ -1098,7 +1099,7 @@ button:hover {
     }
 }
 
-/* Адаптивность */
+/* Адаптивност */
 @media (max-width: 1024px) {
     .main-content {
         padding: 1rem;
@@ -1116,7 +1117,7 @@ button:hover {
 }
 
 @media (max-width: 768px) {
-    /* Основные стили */
+    /* Основни стилове */
     body {
         font-size: 14px;
     }
@@ -1136,7 +1137,7 @@ button:hover {
         height: 40px;
     }
 
-    /* Карточки */
+    /* Карти */
     .stats-container,
     .results-stats {
         grid-template-columns: 1fr;
@@ -1147,7 +1148,7 @@ button:hover {
         padding: 1.5rem;
     }
 
-    /* Вопросы */
+    /* Въпроси */
     #question {
         font-size: 1.4rem;
         margin-bottom: 1.5rem;
@@ -1158,7 +1159,7 @@ button:hover {
         font-size: 1rem;
     }
 
-    /* Результаты */
+    /* Резултати */
     .result-message {
         padding: 1.5rem;
         font-size: 1.1rem;
@@ -1172,7 +1173,7 @@ button:hover {
         font-size: 1.4rem;
     }
 
-    /* Кнопки */
+    /* Бутони */
     .results-buttons {
         flex-direction: column;
         gap: 0.8rem;
@@ -1184,7 +1185,7 @@ button:hover {
         padding: 0.8rem;
     }
 
-    /* Уведомления */
+    /* Известия */
     .achievement-notification {
         width: 90%;
         left: 5%;
@@ -1194,7 +1195,7 @@ button:hover {
 }
 
 @media (max-width: 480px) {
-    /* Ещё более компактный вид */
+    /* Още по-компактен изглед */
     section {
         padding: 1rem;
         margin: 0.5rem;
@@ -1220,7 +1221,7 @@ button:hover {
         font-size: 1.8rem;
     }
 
-    /* Вопросы */
+    /* Въпроси */
     #question {
         font-size: 1.2rem;
         margin-bottom: 1rem;
@@ -1242,12 +1243,12 @@ button:hover {
         grid-template-columns: 1fr;
     }
 
-    /* Достижения */
+    /* Постижения */
     .achievements-grid {
         grid-template-columns: 1fr;
     }
 
-    /* Уведомления */
+    /* Известия */
     .achievement-notification {
         font-size: 0.9rem;
         padding: 0.8rem;
@@ -1257,8 +1258,7 @@ button:hover {
         font-size: 2rem;
     }
 }
-
-/* Ориентация устройства */
+/* Ориентация на устройството */
 @media (orientation: landscape) and (max-height: 600px) {
     .sidebar {
         overflow-y: auto;
@@ -1275,6 +1275,7 @@ button:hover {
     }
 }
 
+/* Контейнер за автентикация */
 .auth-container {
     max-width: 450px;
     margin: 2rem auto;
@@ -1296,6 +1297,7 @@ button:hover {
     background: var(--gradient-main);
 }
 
+/* Заглавие в контейнера за автентикация */
 .auth-container h2 {
     font-size: 2rem;
     margin-bottom: 0.5rem;
@@ -1305,6 +1307,7 @@ button:hover {
     text-align: center;
 }
 
+/* Приветствен текст */
 .auth-welcome {
     text-align: center;
     color: var(--gray-600);
@@ -1312,6 +1315,7 @@ button:hover {
     font-size: 1.1rem;
 }
 
+/* Раздел с табове за вход и регистрация */
 .auth-tabs {
     display: flex;
     gap: 1rem;
@@ -1334,18 +1338,21 @@ button:hover {
     transition: all 0.3s ease;
 }
 
+/* Активен таб */
 .auth-tab.active {
     background: white;
     color: var(--primary);
     box-shadow: var(--shadow-sm);
 }
 
+/* Формуляр за автентикация */
 .auth-form {
     display: flex;
     flex-direction: column;
     gap: 1.2rem;
 }
 
+/* Група за входни полета */
 .input-group {
     position: relative;
 }
@@ -1361,12 +1368,14 @@ button:hover {
     background: var(--gray-50);
 }
 
+/* Стил за фокус на входните полета */
 .auth-form input:focus {
     border-color: var(--primary);
     background: white;
     box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
 }
 
+/* Икона в полето за вход */
 .input-icon {
     position: absolute;
     left: 1rem;
@@ -1378,10 +1387,12 @@ button:hover {
     transition: all 0.3s ease;
 }
 
+/* Промяна на цвета на иконата при фокус */
 .auth-form input:focus + .input-icon {
     color: var(--primary);
 }
 
+/* Бутон за изпращане на формуляра */
 .auth-form button {
     padding: 1.2rem;
     border: none;
@@ -1400,6 +1411,7 @@ button:hover {
     box-shadow: var(--shadow-md);
 }
 
+/* Разделител за социално удостоверяване */
 .auth-divider {
     display: flex;
     align-items: center;
@@ -1416,29 +1428,7 @@ button:hover {
     background: var(--gray-200);
 }
 
-.social-auth {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.social-button {
-    flex: 1;
-    padding: 1rem;
-    border: 2px solid var(--gray-200);
-    border-radius: 12px;
-    background: white;
-    font-size: 1.5rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.social-button:hover {
-    background: var(--gray-50);
-    transform: translateY(-2px);
-}
-
-/* Тёмная тема */
+/* Тъмен режим */
 .dark-theme .auth-container {
     background: var(--surface);
     border-color: var(--border);
@@ -1464,7 +1454,7 @@ button:hover {
     box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2);
 }
 
-/* Адаптивность */
+/* Адаптивност */
 @media (max-width: 480px) {
     .auth-container {
         margin: 1rem;
@@ -1477,82 +1467,7 @@ button:hover {
     }
 }
 
-/* Стили для приветственного экрана */
-.welcome-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin: 2rem 0;
-}
-
-.guest-button {
-    padding: 1.2rem;
-    border: none;
-    border-radius: 12px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: white;
-    background: var(--gradient-main);
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.login-button {
-    padding: 1.2rem;
-    border: 2px solid var(--primary);
-    border-radius: 12px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--primary);
-    background: transparent;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.guest-button:hover,
-.login-button:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
-
-.login-button:hover {
-    background: var(--primary);
-    color: white;
-}
-
-.guest-info {
-    text-align: center;
-    color: var(--gray-500);
-    font-size: 0.9rem;
-    margin-top: 1rem;
-    padding: 1rem;
-    background: var(--gray-50);
-    border-radius: 12px;
-}
-
-.back-button {
-    width: 100%;
-    padding: 1rem;
-    border: none;
-    background: var(--gray-100);
-    border-radius: 12px;
-    font-size: 1rem;
-    color: var(--gray-600);
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.back-button:hover {
-    background: var(--gray-200);
-}
-
-/* Тёмная тема */
-.dark-theme .guest-info {
-    background: var(--surface-hover);
-    color: var(--text);
-}
-
-/* Анимации для секций */
+/* Анимации за секции */
 section {
     transition: opacity 0.3s ease, transform 0.3s ease;
     opacity: 1;
@@ -1565,57 +1480,4 @@ section.hidden {
     display: none;
     opacity: 0;
     transform: translateY(20px);
-}
-
-#language-choice {
-    margin-top: 2rem;
-}
-
-/* Стили для кнопок выбора языка */
-.buttons {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-top: 2rem;
-}
-
-.buttons button {
-    padding: 1.5rem;
-    border: none;
-    border-radius: 12px;
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: white;
-    background: var(--gradient-main);
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.buttons button:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
-
-.task-card {
-    background: white;
-    border-radius: 8px;
-    padding: 1rem;
-    margin: 0.5rem 0;
-    box-shadow: var(--shadow-md);
-}
-
-.task-info {
-    margin-bottom: 0.5rem;
-}
-
-.progress-bar {
-    background: #e0e0e0;
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.progress {
-    background: var(--primary);
-    height: 8px;
-    transition: width 0.3s ease;
 }
